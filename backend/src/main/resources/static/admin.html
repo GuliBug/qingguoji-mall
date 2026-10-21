@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>青果纪商城管理系统</title>
+<style>
+/* ===== 若依 RuoYi 风格 ===== */
+:root{--el-primary:#409EFF;--el-success:#67C23A;--el-warning:#E6A23C;--el-danger:#F56C6C;--el-info:#909399;
+--sidebar:#304156;--sidebar-hover:#263445;--sidebar-active:#001528;--menu-txt:#BFCBD9;--bg:#F0F2F5;--border:#DCDFE6;--txt:#303133;--sub:#606266;--light-sub:#909399}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;font-size:14px;color:var(--txt);background:var(--bg)}
+button{font-family:inherit}
+
+/* 登录页 */
+#login{position:fixed;inset:0;background:#2D3A4B;display:flex;align-items:center;justify-content:center;z-index:99}
+.login-box{width:400px;background:#fff;border-radius:6px;padding:40px 36px;box-shadow:0 0 20px rgba(0,0,0,.2)}
+.login-box h1{font-size:22px;text-align:center;color:var(--txt);margin-bottom:4px}
+.login-box .sub{text-align:center;color:var(--light-sub);font-size:12px;margin-bottom:30px;letter-spacing:1px}
+.fld{margin-bottom:20px}
+.fld label{display:block;font-size:13px;color:var(--sub);margin-bottom:7px}
+.fld input{width:100%;height:38px;padding:0 12px;border:1px solid var(--border);border-radius:4px;font-size:14px;outline:none;transition:border-color .2s}
+.fld input:focus{border-color:var(--el-primary)}
+.el-btn{display:inline-block;height:34px;padding:0 16px;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--sub);font-size:13px;cursor:pointer;transition:.2s;white-space:nowrap}
+.el-btn:hover{color:var(--el-primary);border-color:#C6E2FF;background:#ECF5FF}
+.el-btn.primary{background:var(--el-primary);border-color:var(--el-primary);color:#fff}
+.el-btn.primary:hover{background:#66B1FF;border-color:#66B1FF;color:#fff}
+.el-btn.success{color:var(--el-success);background:#F0F9EB;border-color:#C2E7B0}
+.el-btn.danger{color:var(--el-danger);background:#FEF0F0;border-color:#FBC4C4}
+.el-btn.warning{color:var(--el-warning);background:#FDF6EC;border-color:#F5DAB1}
+.el-btn.big{width:100%;height:40px;font-size:15px}
+.el-btn.text{border:0;background:transparent;padding:0 4px;height:auto}
+.el-btn.text:disabled{color:#C0C4CC;cursor:not-allowed}
+.el-btn + .el-btn{margin-left:8px}
+
+/* 布局 */
+.layout{display:none}
+.layout.on{display:flex;min-height:100vh}
+aside{width:200px;background:var(--sidebar);flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0}
+.logo{height:56px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:15px;font-weight:600;background:#2B2F3A}
+.logo .dot{width:26px;height:26px;border-radius:6px;background:var(--el-primary);display:flex;align-items:center;justify-content:center;font-size:14px}
+.menu{flex:1;overflow-y:auto;padding-top:8px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:0 20px;height:46px;color:var(--menu-txt);cursor:pointer;font-size:14px;transition:.2s}
+.menu-item:hover{background:var(--sidebar-hover);color:#fff}
+.menu-item.act{background:var(--sidebar-active);color:var(--el-primary)}
+.menu-item .ico{width:18px;text-align:center}
+
+.wrap{flex:1;margin-left:200px;display:flex;flex-direction:column}
+.navbar{height:50px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 1px 4px rgba(0,21,41,.08);position:sticky;top:0;z-index:10}
+.crumbs{color:var(--sub);font-size:13px}
+.crumbs b{color:var(--txt);font-weight:600}
+.avatar-area{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--el-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dropdown{position:absolute;right:0;top:40px;background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.1);padding:6px 0;display:none;min-width:110px;z-index:20}
+.dropdown.on{display:block}
+.dropdown div{padding:8px 18px;font-size:13px;color:var(--sub)}
+.dropdown div:hover{background:#ECF5FF;color:var(--el-primary)}
+.tags{height:34px;background:#fff;border-bottom:1px solid #E4E7ED;display:flex;align-items:center;padding:0 12px;gap:8px}
+.tag{font-size:12px;padding:4px 10px;border:1px solid #D8DCE5;border-radius:3px;color:var(--sub);cursor:pointer;background:#fff}
+.tag.act{background:var(--el-primary);border-color:var(--el-primary);color:#fff}
+
+main{flex:1;padding:16px;max-width:1400px;width:100%}
+.panel{display:none}
+.panel.on{display:block}
+.el-card{background:#fff;border-radius:4px;box-shadow:0 1px 4px rgba(0,21,41,.08);padding:18px;margin-bottom:16px}
+
+/* 若依搜索区 */
+.search{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin-bottom:14px}
+.search label{font-size:13px;color:var(--sub)}
+.search input,.search select{height:32px;padding:0 10px;border:1px solid var(--border);border-radius:4px;font-size:13px;outline:none}
+.search input:focus,.search select:focus{border-color:var(--el-primary)}
+.toolbar{margin-bottom:14px}
+
+/* 表格 */
+.el-table{width:100%;border-collapse:collapse}
+.el-table th{background:#F8F8F9;color:var(--sub);font-size:13px;font-weight:600;text-align:left;padding:12px 12px;border-bottom:1px solid #EBEEF5}
+.el-table td{padding:11px 12px;font-size:13px;color:var(--sub);border-bottom:1px solid #EBEEF5}
+.el-table tr:hover td{background:#F5F7FA}
+.el-table .link{color:var(--el-primary);cursor:pointer;font-size:13px}
+.el-table .link.danger{color:var(--el-danger)}
+.el-tag{display:inline-block;padding:0 8px;height:22px;line-height:20px;border-radius:3px;font-size:12px}
+.el-tag.suc{background:#F0F9EB;color:var(--el-success);border:1px solid #C2E7B0}
+.el-tag.dan{background:#FEF0F0;color:var(--el-danger);border:1px solid #FBC4C4}
+.el-tag.war{background:#FDF6EC;color:var(--el-warning);border:1px solid #F5DAB1}
+.el-tag.inf{background:#F4F4F5;color:var(--light-sub);border:1px solid #E9E9EB}
+.el-tag.pri{background:#ECF5FF;color:var(--el-primary);border:1px solid #D9ECFF}
+
+/* 分页 */
+.pager{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:14px 0 2px;font-size:13px;color:var(--sub)}
+.pager .pg{min-width:28px;height:28px;padding:0 6px;border:1px solid var(--border);border-radius:3px;display:inline-flex;align-items:center;justify-content:center;background:#fff;cursor:pointer}
+.pager .pg.act{background:var(--el-primary);border-color:var(--el-primary);color:#fff}
+.pager .pg:disabled{color:#C0C4CC;cursor:not-allowed;background:#F5F7FA}
+
+/* 对话框（el-dialog 风格）*/
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50}
+.mask.on{display:flex}
+.dialog{width:440px;background:#fff;border-radius:4px;box-shadow:0 3px 20px rgba(0,0,0,.2)}
+.dialog .dt{padding:16px 20px;font-size:16px;color:var(--txt);border-bottom:1px solid #EBEEF5;display:flex;justify-content:space-between}
+.dialog .dt span{cursor:pointer;color:var(--light-sub)}
+.dialog .db{padding:22px 20px;font-size:14px;color:var(--sub)}
+.dialog .db input,.dialog .db textarea{width:100%;margin-top:8px;padding:9px 11px;border:1px solid var(--border);border-radius:4px;font-size:13px;outline:none;font-family:inherit}
+.dialog .db input:focus,.dialog .db textarea:focus{border-color:var(--el-primary)}
+.dialog .df{padding:12px 20px 18px;text-align:right}
+.empty{padding:36px;text-align:center;color:var(--light-sub)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.stat .k{font-size:13px;color:var(--light-sub)}
+.stat .v{font-size:28px;font-weight:700;margin-top:8px}
+.stat .v.p{color:var(--el-primary)}.stat .v.s{color:var(--el-success)}.stat .v.w{color:var(--el-warning)}.stat .v.d{color:var(--el-danger)}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#fff;color:var(--txt);padding:10px 18px;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.15);font-size:13px;opacity:0;transition:.3s;z-index:100;border-left:3px solid var(--el-success)}
+#toast.err{border-left-color:var(--el-danger)}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- 登录页 -->
+<div id="login">
+  <div class="login-box">
+    <h1>青果纪商城管理系统</h1>
+    <div class="sub">Qingguoji Mall Admin System</div>
+    <div class="fld"><label>账号</label><input id="u" placeholder="请输入管理员账号" value="admin"></div>
+    <div class="fld"><label>密码</label><input id="p" type="password" placeholder="请输入密码" @keydown.enter="doLogin"></div>
+    <button class="el-btn primary big" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<div class="layout" id="app">
+  <aside>
+    <div class="logo"><span class="dot">青</span>青果纪商城</div>
+    <div class="menu" id="nav">
+      <div class="menu-item act" data-p="dash"><span class="ico">📊</span>首页看板</div>
+      <div class="menu-item" data-p="prod"><span class="ico">🧾</span>商品管理</div>
+      <div class="menu-item" data-p="stock"><span class="ico">📦</span>库存管理</div>
+      <div class="menu-item" data-p="order"><span class="ico">🚚</span>订单管理</div>
+      <div class="menu-item" data-p="after"><span class="ico">↩️</span>售后管理</div>
+      <div class="menu-item" data-p="member"><span class="ico">👤</span>会员管理</div>
+    </div>
+  </aside>
+
+  <div class="wrap">
+    <div class="navbar">
+      <div class="crumbs" id="crumbs">首页 / <b>首页看板</b></div>
+      <div class="avatar-area" onclick="toggleDrop()">
+        <div class="avatar">A</div><span style="font-size:13px;color:var(--sub)">admin</span>
+        <div class="dropdown" id="drop"><div onclick="logout(event)">退出登录</div></div>
+      </div>
+    </div>
+    <div class="tags"><span class="tag act" id="tagNow">首页看板</span></div>
+
+    <main>
+      <!-- 看板 -->
+      <div class="panel on" id="p-dash">
+        <div class="el-card"><div class="stat-grid" id="dashCards"></div></div>
+        <div class="el-card" style="color:var(--light-sub);font-size:13px">
+          欢迎使用青果纪商城管理系统。看板数据每 30 秒自动刷新；请通过左侧菜单进入各管理模块。
+        </div>
+      </div>
+
+      <!-- 商品 -->
+      <div class="panel" id="p-prod">
+        <div class="el-card">
+          <div class="search">
+            <label>商品名称</label><input id="pq" placeholder="请输入商品名称" style="width:180px">
+            <button class="el-btn primary" onclick="loadProducts()">搜索</button>
+            <button class="el-btn" onclick="$('pq').value='';loadProducts()">重置</button>
+          </div>
+          <table class="el-table"><thead><tr>
+            <th>商品编号</th><th>商品名称</th><th>分类</th><th>价格区间</th><th>销量</th><th>状态</th><th>操作</th>
+          </tr></thead><tbody id="prodBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- 库存 -->
+      <div class="panel" id="p-stock">
+        <div class="el-card">
+          <div class="search">
+            <label>规格关键字</label><input id="skq" placeholder="请输入规格" style="width:180px">
+            <button class="el-btn primary" onclick="loadSkus()">搜索</button>
+            <button class="el-btn" onclick="$('skq').value='';loadSkus()">重置</button>
+          </div>
+          <table class="el-table"><thead><tr>
+            <th>SKU编号</th><th>所属商品</th><th>规格</th><th>单价</th><th>总库存</th><th>锁定库存</th><th>可售库存</th><th>操作</th>
+          </tr></thead><tbody id="skuBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- 订单 -->
+      <div class="panel" id="p-order">
+        <div class="el-card">
+          <div class="search">
+            <label>订单状态</label>
+            <select id="orderSt" onchange="loadOrders()">
+              <option value="">全部</option><option value="WAIT_PAY">待付款</option><option value="PAID">已付款</option>
+              <option value="SHIPPED">已发货</option><option value="COMPLETED">已完成</option>
+              <option value="CANCELED">已取消</option><option value="CLOSED">已关闭</option>
+            </select>
+            <label>订单号</label><input id="oq" placeholder="请输入订单号" style="width:180px">
+            <button class="el-btn primary" onclick="loadOrders()">搜索</button>
+            <button class="el-btn" onclick="$('oq').value='';$('orderSt').value='';loadOrders()">重置</button>
+          </div>
+          <table class="el-table"><thead><tr>
+            <th>订单编号</th><th>会员ID</th><th>订单金额</th><th>订单状态</th><th>物流单号</th><th>操作</th>
+          </tr></thead><tbody id="orderBody"></tbody></table>
+          <div class="pager" id="orderPager"></div>
+        </div>
+      </div>
+
+      <!-- 售后 -->
+      <div class="panel" id="p-after">
+        <div class="el-card">
+          <div class="search">
+            <label>售后状态</label>
+            <select id="asSt" onchange="loadAfters()">
+              <option value="">全部</option><option value="WAIT_AUDIT">待审核</option><option value="WAIT_RETURN">待寄回</option>
+              <option value="WAIT_RECEIVE">待收货</option><option value="DONE">已完成</option><option value="REJECTED">已拒绝</option>
+            </select>
+            <button class="el-btn primary" onclick="loadAfters()">搜索</button>
+            <button class="el-btn" onclick="$('asSt').value='';loadAfters()">重置</button>
+          </div>
+          <table class="el-table"><thead><tr>
+            <th>售后单号</th><th>类型</th><th>数量</th><th>退款金额</th><th>状态</th><th>退货物流</th><th>操作</th>
+          </tr></thead><tbody id="asBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- 会员 -->
+      <div class="panel" id="p-member">
+        <div class="el-card">
+          <div class="search">
+            <label>手机号</label><input id="mq" placeholder="请输入手机号" style="width:180px">
+            <button class="el-btn primary" onclick="loadMembers()">搜索</button>
+            <button class="el-btn" onclick="$('mq').value='';loadMembers()">重置</button>
+          </div>
+          <table class="el-table"><thead><tr>
+            <th>会员编号</th><th>手机号</th><th>昵称</th><th>会员等级</th><th>积分</th><th>成长值</th><th>操作</th>
+          </tr></thead><tbody id="memBody"></tbody></table>
+          <div class="pager" id="memPager"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- 通用对话框 -->
+<div class="mask" id="mask">
+  <div class="dialog">
+    <div class="dt"><b id="dlgTitle">提示</b><span onclick="closeDlg()">✕</span></div>
+    <div class="db" id="dlgBody"></div>
+    <div class="df"><button class="el-btn" onclick="closeDlg()">取 消</button><button class="el-btn primary" id="dlgOk">确 定</button></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+let T = localStorage.getItem('qgj_admin_token') || ''
+const H = () => ({'Content-Type':'application/json','X-Token':T})
+const $ = id => document.getElementById(id)
+const esc = s => String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]))
+const money = v => '¥' + Number(v ?? 0).toFixed(2)
+const ST = {WAIT_PAY:['待付款','war'],PAID:['已付款','pri'],SHIPPED:['已发货','pri'],COMPLETED:['已完成','suc'],CANCELED:['已取消','inf'],CLOSED:['已关闭','inf']}
+const AST = {WAIT_AUDIT:['待审核','war'],WAIT_RETURN:['待寄回','dan'],WAIT_RECEIVE:['待收货','dan'],DONE:['已完成','suc'],REJECTED:['已拒绝','inf']}
+const LV = {REG:['注册会员','inf'],BRONZE:['铜卡','inf'],SILVER:['银卡','pri'],GOLD:['金卡','war'],BLACKGOLD:['黑金卡','dan']}
+const tag = (t, c) => `<span class="el-tag ${c}">${esc(t)}</span>`
+
+async function api(method, path, body){
+  const r = await fetch('/admin-api' + path, {method, headers: H(), body: body ? JSON.stringify(body) : undefined})
+  const d = await r.json().catch(() => ({code:500,msg:'响应解析失败'}))
+  if (r.status === 401 || d.code === 401) { logout(); throw new Error('登录已过期，请重新登录') }
+  if (d.code !== 200) throw new Error(d.msg || '操作失败')
+  return d.data
+}
+let toastTimer
+function toast(msg, bad){ const t = $('toast'); t.textContent = msg; t.className = bad ? 'on err' : 'on'; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = '', 2400) }
+const run = fn => fn().then(m => m && toast(m)).catch(e => toast(e.message, true))
+
+/* 登录 */
+async function doLogin(){
+  try{
+    const r = await fetch('/admin-api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username: $('u').value.trim(), password: $('p').value})})
+    const d = await r.json()
+    if (d.code !== 200) return toast(d.msg || '登录失败', true)
+    T = d.data.token; localStorage.setItem('qgj_admin_token', T)
+    $('login').style.display = 'none'; $('app').classList.add('on')
+    loadDash()
+  }catch(e){ toast('网络错误：' + e.message, true) }
+}
+function logout(){ localStorage.removeItem('qgj_admin_token'); T = ''; $('app').classList.remove('on'); $('login').style.display = 'flex' }
+function toggleDrop(){ $('drop').classList.toggle('on') }
+document.addEventListener('click', e => { if (!e.target.closest('.avatar-area')) $('drop').classList.remove('on') })
+if (T) { $('login').style.display = 'none'; $('app').classList.add('on'); loadDash() }
+
+/* 菜单 */
+const PAGE_NAME = {dash:'首页看板',prod:'商品管理',stock:'库存管理',order:'订单管理',after:'售后管理',member:'会员管理'}
+document.querySelectorAll('#nav .menu-item').forEach(a => a.onclick = () => {
+  document.querySelectorAll('#nav .menu-item').forEach(x => x.classList.remove('act')); a.classList.add('act')
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on')); $('p-' + a.dataset.p).classList.add('on')
+  $('crumbs').innerHTML = '首页 / <b>' + PAGE_NAME[a.dataset.p] + '</b>'
+  $('tagNow').textContent = PAGE_NAME[a.dataset.p]
+  ;({dash:loadDash, prod:loadProducts, stock:loadSkus, order:loadOrders, after:loadAfters, member:loadMembers})[a.dataset.p]()
+})
+
+/* 通用确认对话框 */
+let dlgResolve
+function openDlg(title, html){ $('dlgTitle').textContent = title; $('dlgBody').innerHTML = html; $('mask').classList.add('on'); return new Promise(r => dlgResolve = r) }
+function closeDlg(){ $('mask').classList.remove('on'); dlgResolve && dlgResolve(null) }
+$('dlgOk').onclick = () => { const v = dlgResolve; $('mask').classList.remove('on'); v && v(true) }
+
+/* 看板 */
+let dashTimer
+async function loadDash(){
+  const d = await api('GET', '/dashboard')
+  const items = [
+    ['今日销售额', money(d.todaySales||0), 'p'], ['今日订单数', d.todayOrders ?? 0, 's'],
+    ['待发货订单', d.pendingShip ?? 0, 'w'], ['待审核售后', d.pendingAfterSales ?? 0, 'd'],
+    ['会员总数', d.memberCount ?? 0, 'p'], ['在售商品', d.productCount ?? 0, 's']
+  ]
+  $('dashCards').innerHTML = items.map(([k,v,c]) => `<div class="stat"><div class="k">${k}</div><div class="v ${c}">${esc(v)}</div></div>`).join('')
+  clearTimeout(dashTimer)
+  dashTimer = setTimeout(() => { if ($('app').classList.contains('on') && $('p-dash').classList.contains('on')) loadDash().catch(()=>{}) }, 30000)
+}
+
+/* 商品 */
+async function loadProducts(){
+  const d = await api('GET', '/products?size=50')
+  let rows = d.content || []
+  const q = $('pq').value.trim(); if (q) rows = rows.filter(p => (p.name||'').includes(q))
+  $('prodBody').innerHTML = rows.map(p => `<tr>
+    <td>${p.id}</td><td style="color:var(--txt)">${esc(p.name)}</td><td>${esc(p.category)}</td>
+    <td>${money(p.priceMin)} ~ ${money(p.priceMax)}</td><td>${p.sales}</td>
+    <td>${p.status === 1 ? tag('在售','suc') : tag('已下架','inf')}</td>
+    <td><span class="link ${p.status===1?'danger':''}" onclick="toggleProd(${p.id},${p.status===1?0:1})">${p.status===1?'下架':'上架'}</span></td></tr>`).join('') || '<tr><td colspan="7" class="empty">暂无数据</td></tr>'
+}
+async function toggleProd(id, st){
+  const ok = await openDlg('提示', `确定要${st===1?'上架':'下架'}该商品吗？`)
+  if (!ok) return
+  run(async () => { await api('POST', `/products/${id}/status`, {status: st}); await loadProducts(); return st===1 ? '上架成功' : '下架成功' })
+}
+
+/* 库存 */
+async function loadSkus(){
+  const d = await api('GET', '/skus')
+  let rows = d || []
+  const q = $('skq').value.trim(); if (q) rows = rows.filter(s => (s.spec||'').includes(q))
+  $('skuBody').innerHTML = rows.map(s => `<tr>
+    <td>${s.id}</td><td>${esc(s.productName||'')}</td><td>${esc(s.spec)}</td><td>${money(s.price)}</td>
+    <td>${s.totalStock}</td><td>${s.lockedStock}</td><td style="color:var(--el-danger);font-weight:600">${s.totalStock - s.lockedStock}</td>
+    <td><span class="link" onclick="adjStock(${s.id},${s.totalStock - s.lockedStock})">调整库存</span></td></tr>`).join('') || '<tr><td colspan="8" class="empty">暂无数据</td></tr>'
+}
+async function adjStock(id, cur){
+  const ok = await openDlg('调整库存', `当前可售库存：<b>${cur}</b><br>变动数量（正数入库 / 负数出库，不能为 0）<input id="dlgIn" placeholder="请输入变动数量">`)
+  if (!ok) return
+  const v = $('dlgIn').value.trim()
+  run(async () => { await api('POST', `/skus/${id}/stock`, {delta: Number(v), reason: '管理端人工调整'}); await loadSkus(); return '库存调整成功' })
+}
+
+/* 订单 */
+async function loadOrders(){
+  const st = $('orderSt').value, q = $('oq').value.trim()
+  const d = await api('GET', '/orders?size=100' + (st ? '&status=' + st : ''))
+  let rows = d.content || []; if (q) rows = rows.filter(o => (o.orderNo||'').includes(q))
+  const shown = rows.slice(0, 10)
+  $('orderBody').innerHTML = shown.map(o => `<tr>
+    <td style="color:var(--txt)">${esc(o.orderNo)}</td><td>${o.memberId}</td><td>${money(o.payAmount)}</td>
+    <td>${(() => { const [t,c] = ST[o.status]||[o.status,'inf']; return tag(t,c) })()}</td><td>${esc(o.logisticsNo||'—')}</td>
+    <td>${o.status === 'PAID' ? `<span class="link" onclick="ship('${esc(o.orderNo)}')">发货</span>` : '<span style="color:var(--light-sub)">—</span>'}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">暂无数据</td></tr>'
+  $('orderPager').innerHTML = `<span>共 ${rows.length} 条</span>` +
+    Array.from({length: Math.max(1, Math.ceil(rows.length/10))}, (_, i) => `<span class="pg ${i===0?'act':''}">${i+1}</span>`).join('')
+}
+async function ship(no){
+  const ok = await openDlg('订单发货', `订单号：<b>${esc(no)}</b><br>物流单号<input id="dlgIn" placeholder="请输入物流单号">`)
+  if (!ok) return
+  const v = $('dlgIn').value.trim()
+  run(async () => { await api('POST', `/orders/${no}/ship`, {logisticsNo: v}); await loadOrders(); return '发货成功' })
+}
+
+/* 售后 */
+async function loadAfters(){
+  const st = $('asSt').value
+  const d = await api('GET', '/aftersales?size=100' + (st ? '&status=' + st : ''))
+  $('asBody').innerHTML = (d.content||[]).map(a => `<tr>
+    <td style="color:var(--txt)">${esc(a.afterNo)}</td><td>${a.type==='REFUND_ONLY' ? tag('仅退款','pri') : tag('退货退款','war')}</td>
+    <td>${a.qty}</td><td>${money(a.refundAmount)}</td>
+    <td>${(() => { const [t,c] = AST[a.status]||[a.status,'inf']; return tag(t,c) })()}</td><td>${esc(a.returnLogisticsNo||'—')}</td>
+    <td>${a.status==='WAIT_AUDIT' ? `<span class="link" onclick="audit(${a.id},true)">通过</span><span class="link danger" onclick="audit(${a.id},false)">拒绝</span>` : ''}
+        ${a.status==='WAIT_RECEIVE' ? `<span class="link" onclick="confirmReturn(${a.id})">确认收货并退款</span>` : ''}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">暂无数据</td></tr>'
+}
+async function audit(id, pass){
+  if (pass) { const ok = await openDlg('售后审核', '确定审核通过该售后申请吗？'); if (!ok) return }
+  else {
+    const ok = await openDlg('拒绝售后', '拒绝原因<input id="dlgIn" placeholder="请输入拒绝原因">'); if (!ok) return
+    var reason = $('dlgIn').value.trim() || '不符合售后条件'
+  }
+  run(async () => { await api('POST', `/aftersales/${id}/audit`, {pass, rejectReason: pass ? null : (typeof reason !== 'undefined' ? reason : null)}); await loadAfters(); return pass ? '审核通过' : '已拒绝' })
+}
+async function confirmReturn(id){
+  const ok = await openDlg('确认收货', '确认已收到买家寄回商品？确认后将执行退款并回补库存。')
+  if (!ok) return
+  run(async () => { await api('POST', `/aftersales/${id}/confirm-return`); await loadAfters(); return '确认收货成功，退款完成' })
+}
+
+/* 会员 */
+async function loadMembers(){
+  const d = await api('GET', '/members?size=100')
+  let rows = d.content || []
+  const q = $('mq').value.trim(); if (q) rows = rows.filter(m => (m.phone||'').includes(q))
+  const shown = rows.slice(0, 10)
+  $('memBody').innerHTML = shown.map(m => `<tr>
+    <td>${m.id}</td><td>${esc(m.phone)}</td><td>${esc(m.nickname||'—')}</td>
+    <td>${(() => { const [t,c] = LV[m.level]||[m.levelName,'inf']; return tag(t,c) })()}</td>
+    <td style="color:var(--el-danger);font-weight:600">${m.points}</td><td>${m.growth}</td>
+    <td><span class="link" onclick="adjPoints(${m.id})">调整积分</span><span class="link" onclick="pointLogs(${m.id})">流水</span></td></tr>`).join('') || '<tr><td colspan="7" class="empty">暂无数据</td></tr>'
+  $('memPager').innerHTML = `<span>共 ${rows.length} 条</span>` +
+    Array.from({length: Math.max(1, Math.ceil(rows.length/10))}, (_, i) => `<span class="pg ${i===0?'act':''}">${i+1}</span>`).join('')
+}
+async function adjPoints(id){
+  const ok = await openDlg('调整积分', '变动积分（正数发放 / 负数扣减，不能为 0）<input id="dlgIn" placeholder="请输入变动积分">')
+  if (!ok) return
+  const v = $('dlgIn').value.trim()
+  run(async () => { await api('POST', `/members/${id}/points`, {delta: Number(v), reason: '管理端调整'}); await loadMembers(); return '积分调整成功' })
+}
+async function pointLogs(id){
+  try{
+    const d = await api('GET', `/members/${id}/points/logs?size=10`)
+    const rows = (d.content||[]).map(l => `${(l.createdAt||'').replace('T',' ')}   ${l.type}   ${l.delta>0?'+':''}${l.delta}`).join('\n')
+    alert(rows || '暂无流水')
+  }catch(e){ toast(e.message, true) }
+}
+</script>
+</body>
+</html>

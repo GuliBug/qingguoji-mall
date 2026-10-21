@@ -1,0 +1,46 @@
+{
+  "name": "mall-client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "青果纪槟榔会员商城 H5（Taro4 + Vue3）",
+  "templateInfo": {
+    "name": "default",
+    "typescript": true,
+    "css": "sass",
+    "framework": "vue3"
+  },
+  "scripts": {
+    "build:h5": "taro build --type h5",
+    "dev:h5": "npm run build:h5 -- --watch",
+    "dev:weapp": "npm run build:weapp -- --watch",
+    "build:weapp": "taro build --type weapp"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "Android >= 4.1",
+    "ios >= 8"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.24.4",
+    "@tarojs/components": "^4.0.9",
+    "@tarojs/helper": "^4.0.9",
+    "@tarojs/plugin-framework-vue3": "^4.0.9",
+    "@tarojs/plugin-platform-h5": "^4.0.9",
+    "@tarojs/plugin-platform-weapp": "^4.0.9",
+    "@tarojs/runtime": "^4.0.9",
+    "@tarojs/shared": "^4.0.9",
+    "@tarojs/taro": "^4.0.9",
+    "vue": "^3.4.27"
+  },
+  "devDependencies": {
+    "@tarojs/cli": "^4.0.9",
+    "@tarojs/vite-runner": "^4.0.9",
+    "@vitejs/plugin-vue": "^4.6.2",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "@vue/babel-plugin-jsx": "^1.2.2",
+    "babel-preset-taro": "^4.0.9",
+    "sass": "^1.77.0",
+    "typescript": "^5.4.5",
+    "vite": "^4.5.14"
+  }
+}

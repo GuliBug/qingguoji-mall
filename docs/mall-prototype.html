@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>青果纪 · 槟榔品牌会员商城 H5原型</title>
+<style>
+:root{
+  --red:#B0231F; --red-deep:#8E1714; --gold:#E8B34B; --gold-deep:#C9912F;
+  --bg:#F7F3EC; --card:#fff; --text:#2B2320; --sub:#9A8F86; --line:#EEE7DD;
+  --green:#07C160; --blue:#1989FA; --orange:#FA8C16;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+body{background:#E6E0D6;min-height:100vh;color:var(--text)}
+.mode-toggle{position:fixed;top:14px;right:22px;z-index:99;display:flex;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.mode-toggle button{border:0;padding:8px 20px;background:transparent;cursor:pointer;font-size:14px;color:#666}
+.mode-toggle button.on{background:var(--red);color:#fff}
+
+/* H5 画布 */
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);box-shadow:0 0 30px rgba(0,0,0,.08);position:relative;display:flex;flex-direction:column}
+.page{display:none;flex:1;flex-direction:column;min-height:100vh}
+.page.on{display:flex}
+.scroll{flex:1;overflow-y:auto;padding-bottom:70px}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:58px;background:#fff;border-top:1px solid var(--line);display:flex;z-index:50}
+.tabbar .tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:var(--sub);cursor:pointer}
+.tabbar .tb.on{color:var(--red)}
+.tabbar .ic{width:22px;height:22px;border-radius:6px;background:currentColor;opacity:.7}
+.tabbar .tb.on .ic{opacity:1}
+.tabbar .mid .ic{background:linear-gradient(135deg,var(--gold),var(--gold-deep));width:40px;height:40px;border-radius:50%;margin-top:-16px;opacity:1;box-shadow:0 3px 8px rgba(201,145,47,.4)}
+
+/* 通用 */
+.price{color:var(--red);font-weight:600}
+.btn-red{background:linear-gradient(90deg,#C93A32,var(--red-deep));color:#fff;border:0;border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer}
+.btn-line{border:1px solid #ccc;background:#fff;color:#666;border-radius:20px;padding:7px 16px;font-size:13px;cursor:pointer}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#5C3A00;border:0;border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer;font-weight:600}
+.tag{font-size:10px;padding:1px 6px;border-radius:3px;color:#fff;display:inline-block}
+.tag.gold{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#4A2E00}
+
+/* 首页 */
+.home-head{background:linear-gradient(160deg,#C93A32,#8E1714 70%);padding:18px 16px 60px;color:#fff}
+.hh-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:8px}
+.logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#5C3A00;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.brand b{font-size:17px;letter-spacing:2px}
+.brand small{display:block;font-size:9px;opacity:.65;letter-spacing:1px}
+.search-input{background:rgba(255,255,255,.95);border-radius:16px;height:32px;display:flex;align-items:center;padding:0 12px;color:#B8A99C;font-size:13px}
+.banner{margin:-42px 14px 0;background:linear-gradient(120deg,#2B2320,#4A3226);border-radius:12px;height:110px;color:var(--gold);display:flex;flex-direction:column;justify-content:center;padding:0 20px;position:relative;overflow:hidden}
+.banner::after{content:"榫";position:absolute;right:-8px;bottom:-22px;font-size:90px;opacity:.06;font-weight:700}
+.banner b{font-size:18px;letter-spacing:1px}
+.banner span{font-size:11px;opacity:.75;margin-top:5px;color:#D8C9A8}
+.member-card{margin:12px 14px;border-radius:12px;padding:16px;color:#4A2E00;background:linear-gradient(120deg,#F3D288,#E8B34B 55%,#D69E35);position:relative;overflow:hidden;cursor:pointer}
+.member-card::after{content:"纪";position:absolute;right:-6px;bottom:-26px;font-size:100px;opacity:.08;font-weight:700}
+.mc-top{display:flex;justify-content:space-between;align-items:center}
+.mc-lv{font-size:16px;font-weight:700;letter-spacing:1px}
+.mc-lv .tag{background:rgba(92,58,0,.18);color:#4A2E00;margin-left:6px}
+.mc-r{font-size:11px;background:rgba(92,58,0,.14);padding:4px 10px;border-radius:12px}
+.mc-pts{font-size:22px;font-weight:700;margin-top:10px}
+.mc-pts small{font-size:11px;font-weight:400;opacity:.7}
+.mc-bar{height:5px;border-radius:3px;background:rgba(92,58,0,.18);margin-top:8px;overflow:hidden}
+.mc-bar i{display:block;height:100%;width:38%;background:linear-gradient(90deg,#8E1714,#C93A32);border-radius:3px}
+.mc-next{font-size:10px;opacity:.75;margin-top:5px}
+.quick{display:flex;margin:0 14px;background:#fff;border-radius:12px;padding:14px 0}
+.quick .q{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:#6B5D52;cursor:pointer}
+.quick .q i{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px;font-weight:700;color:#fff}
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin:18px 16px 10px}
+.sec-head h3{font-size:15px;display:flex;align-items:center;gap:6px}
+.sec-head h3::before{content:"";width:4px;height:14px;border-radius:2px;background:linear-gradient(var(--red),var(--gold))}
+.sec-head span{font-size:11px;color:var(--sub);cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 14px}
+.gcard{background:#fff;border-radius:10px;overflow:hidden;cursor:pointer}
+.gimg{width:100%;height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;letter-spacing:2px;position:relative}
+.gimg small{font-size:9px;opacity:.75;letter-spacing:1px;margin-top:3px;font-weight:400}
+.gbody{padding:9px 10px 11px}
+.gname{font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.grow2{display:flex;align-items:baseline;margin-top:5px}
+.gprice{font-size:16px}
+.gprice em{font-style:normal;font-size:11px}
+.gsales{font-size:10px;color:var(--sub);margin-left:6px}
+.gpts{font-size:10px;color:var(--gold-deep);background:#FBF3E1;border-radius:3px;padding:1px 5px;margin-left:auto}
+
+/* 详情 */
+.d-img{height:260px;background:linear-gradient(135deg,#8E1714,#C93A32);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;letter-spacing:3px}
+.d-img b{font-size:26px}
+.d-img small{font-size:12px;opacity:.7;margin-top:6px;letter-spacing:1px}
+.d-body{background:#fff;padding:14px;border-radius:14px 14px 0 0;margin-top:-14px;position:relative}
+.d-price .p{font-size:24px;color:var(--red);font-weight:700}
+.d-price .o{font-size:12px;color:#bbb;text-decoration:line-through;margin-left:8px}
+.d-price .g{font-size:11px;color:var(--gold-deep);background:#FBF3E1;padding:2px 8px;border-radius:10px;margin-left:8px}
+.d-name{font-size:16px;font-weight:600;margin:8px 0 6px}
+.d-sub{font-size:11px;color:var(--gold-deep);background:#FBF3E1;padding:4px 8px;border-radius:4px;display:inline-block}
+.d-svc{display:flex;gap:14px;font-size:11px;color:#8A7D72;padding:10px 0;border-bottom:1px solid var(--line)}
+.d-sec{background:#fff;margin-top:10px;padding:14px}
+.sku-title{font-size:13px;color:var(--sub);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{border:1px solid #E5DACB;border-radius:4px;padding:6px 14px;font-size:13px;cursor:pointer;background:#FAF6EF}
+.chip.on{border-color:var(--red);color:var(--red);background:#FBEAE9}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:28px;height:28px;border-radius:4px;border:1px solid #E5DACB;background:#fff;font-size:16px;cursor:pointer;color:#8A7D72}
+.stepper span{min-width:30px;text-align:center;font-size:14px}
+.d-bar{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:54px;background:#fff;display:flex;align-items:center;padding:0 12px;gap:8px;z-index:40;border-top:1px solid var(--line)}
+.d-bar .mini{display:flex;flex-direction:column;align-items:center;font-size:9px;color:#8A7D72;width:40px;cursor:pointer}
+.d-bar .mini i{width:20px;height:20px;background:#C9BCAE;border-radius:5px;margin-bottom:2px}
+.d-bar .grow{flex:1}
+.btn-cart{background:var(--gold-deep);color:#fff;border:0;padding:11px 18px;border-radius:22px 0 0 22px;font-size:13px;cursor:pointer}
+.btn-buy{background:linear-gradient(90deg,#C93A32,var(--red-deep));color:#fff;border:0;padding:11px 18px;border-radius:0 22px 22px 0;font-size:13px;cursor:pointer}
+
+/* 会员中心 */
+.me-hero{background:linear-gradient(160deg,#C93A32,#8E1714 70%);padding:20px 16px 56px;color:#fff}
+.me-top{display:flex;align-items:center;gap:12px}
+.avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#5C3A00;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;border:2px solid rgba(255,255,255,.6)}
+.me-top .n{font-size:17px;font-weight:600}
+.me-top .lv{font-size:10px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#4A2E00;padding:2px 8px;border-radius:8px;margin-left:6px;font-weight:600}
+.me-top .p{font-size:11px;opacity:.75;margin-top:4px}
+.me-pts-row{display:flex;gap:10px;margin:-36px 14px 0;position:relative}
+.pt-card{flex:1;background:#fff;border-radius:12px;padding:13px;text-align:center;cursor:pointer}
+.pt-card .v{font-size:20px;font-weight:700;color:var(--red)}
+.pt-card .l{font-size:11px;color:var(--sub);margin-top:3px}
+.checkin{margin:12px 14px;background:#fff;border-radius:12px;padding:14px}
+.ci-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ci-head b{font-size:14px}
+.ci-head span{font-size:11px;color:var(--gold-deep)}
+.ci-days{display:flex;justify-content:space-between}
+.ci-day{flex:1;text-align:center;font-size:10px;color:var(--sub)}
+.ci-day i{display:block;width:26px;height:26px;margin:0 auto 4px;border-radius:50%;background:#F3EDE3;position:relative}
+.ci-day.got i{background:linear-gradient(135deg,var(--gold),var(--gold-deep))}
+.ci-day.got i::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px}
+.ci-day i::before{content:"+5";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#C9BCAE;font-size:9px}
+.ci-day.got i::before{display:none}
+.ci-day:nth-child(7) i{background:linear-gradient(135deg,#C93A32,#8E1714)}
+.ci-day:nth-child(7) i::before{content:"+50";color:#F3D288}
+.ci-btn{width:100%;margin-top:14px;padding:11px;border-radius:22px;border:0;font-size:14px;font-weight:600;color:#5C3A00;background:linear-gradient(135deg,var(--gold),var(--gold-deep));cursor:pointer}
+.lv-rules{margin:12px 14px;background:#fff;border-radius:12px;padding:14px}
+.lv-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.lv-row:last-child{border:0}
+.lv-badge{width:46px;text-align:center;font-size:10px;padding:4px 0;border-radius:6px;color:#fff;margin-right:12px;font-weight:600}
+.lv-info{flex:1}
+.lv-info b{font-size:13px}
+.lv-info small{display:block;font-size:10px;color:var(--sub);margin-top:2px}
+.lv-cur{font-size:10px;color:var(--red);border:1px solid var(--red);border-radius:8px;padding:1px 8px}
+.cells{background:#fff;border-radius:12px;margin:12px 14px}
+.cell{display:flex;align-items:center;padding:14px;font-size:14px;border-bottom:1px solid var(--line);cursor:pointer}
+.cell:last-child{border-bottom:0}
+.cell .cn{flex:1}
+.cell::after{content:"›";color:#C9BCAE;font-size:18px}
+.cell .bdg{background:var(--red);color:#fff;font-size:10px;border-radius:8px;padding:0 5px;margin-right:4px}
+
+/* 积分兑换 */
+.pts-head{background:linear-gradient(160deg,#C93A32,#8E1714 70%);padding:18px 16px 50px;color:#fff;text-align:center}
+.pts-head .v{font-size:32px;font-weight:700;color:var(--gold);margin-top:6px}
+.pts-head .l{font-size:11px;opacity:.7;margin-top:4px}
+.ex-tabs{display:flex;gap:8px;padding:0 14px;margin-top:-30px;overflow-x:auto}
+.ex-tab{flex-shrink:0;background:#fff;border-radius:18px;padding:7px 16px;font-size:12px;color:#6B5D52;cursor:pointer;border:1px solid var(--line)}
+.ex-tab.on{background:linear-gradient(135deg,#C93A32,#8E1714);color:#fff;border-color:transparent}
+.ex-goods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px}
+.ex-card{background:#fff;border-radius:10px;overflow:hidden;cursor:pointer}
+.ex-card .gbody .need{font-size:14px;color:var(--gold-deep);font-weight:700}
+.ex-card .gbody .need em{font-style:normal;font-size:10px}
+.mall-sw{font-size:10px;color:var(--red);border:1px solid var(--red);border-radius:10px;padding:2px 10px;margin-left:auto;cursor:pointer}
+
+/* 购物车/订单/售后 复用 */
+.nav{background:#fff;height:46px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;position:relative;flex-shrink:0}
+.nav .back{position:absolute;left:12px;font-size:20px;color:#333;cursor:pointer;font-weight:400}
+.cart-item{background:#fff;display:flex;align-items:center;padding:12px;margin:0 14px 2px;gap:10px}
+.ck{width:18px;height:18px;border-radius:50%;border:1px solid #D8CBBB;flex-shrink:0;cursor:pointer}
+.ck.on{background:var(--red);border-color:var(--red);position:relative}
+.ck.on::after{content:"";position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.ci-img{width:70px;height:70px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.ci-n{font-size:13px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ci-sku{font-size:11px;color:var(--sub);background:#F5F1E8;display:inline-block;padding:2px 6px;border-radius:3px;margin:5px 0}
+.ci-row{display:flex;justify-content:space-between;align-items:center}
+.settle{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:52px;background:#fff;display:flex;align-items:center;padding:0 14px;gap:10px;z-index:40;border-top:1px solid var(--line)}
+.settle .all{font-size:13px;color:#666;display:flex;align-items:center;gap:6px}
+.settle .sum{flex:1;text-align:right;font-size:12px}
+.settle .sum b{color:var(--red);font-size:17px}
+.addr{background:#fff;margin:12px 14px;border-radius:12px;padding:14px;position:relative}
+.addr .a-name{font-size:15px;font-weight:600}
+.addr .a-name span{font-size:13px;color:#666;font-weight:400;margin-left:8px}
+.addr .a-det{font-size:13px;color:#666;margin-top:5px;line-height:1.5}
+.addr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:repeating-linear-gradient(105deg,var(--red) 0 12px,var(--gold) 12px 24px,#2B2320 24px 36px)}
+.o-item{background:#fff;margin:2px 14px;padding:12px;display:flex;gap:10px}
+.o-item .img{width:62px;height:62px;border-radius:6px;flex-shrink:0}
+.o-sum{background:#fff;margin:2px 14px;border-radius:0 0 12px 12px;padding:12px 14px;font-size:13px}
+.o-sum .row{display:flex;justify-content:space-between;margin-bottom:8px;color:#666}
+.o-sum .row.total{margin:0;padding-top:8px;border-top:1px solid var(--line);color:var(--text)}
+.o-sum .total b{color:var(--red);font-size:16px}
+.submit-bar{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:52px;background:#fff;display:flex;align-items:center;justify-content:flex-end;padding:0 14px;gap:12px;z-index:40;border-top:1px solid var(--line)}
+.submit-bar span{font-size:13px}
+.submit-bar b{color:var(--red);font-size:18px}
+.tabs{display:flex;background:#fff;padding:0 6px;flex-shrink:0}
+.tabs div{flex:1;text-align:center;padding:11px 0;font-size:13px;color:#666;cursor:pointer;position:relative}
+.tabs div.on{color:var(--red);font-weight:600}
+.tabs div.on::after{content:"";position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:24px;height:3px;border-radius:2px;background:var(--red)}
+.order-card{background:#fff;border-radius:12px;margin:10px 14px;padding:12px 14px}
+.oc-head{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-bottom:8px}
+.oc-status{color:var(--red)}
+.oc-item{display:flex;gap:10px;margin-bottom:8px}
+.oc-item .img{width:58px;height:58px;border-radius:6px;flex-shrink:0}
+.oc-foot{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:8px;border-top:1px solid var(--line)}
+.oc-foot .t{font-size:12px;margin-right:auto}
+.oc-foot .t b{color:var(--red)}
+.a-type{display:flex;gap:10px;margin-bottom:14px}
+.a-type .opt{flex:1;border:1px solid #E5DACB;border-radius:8px;padding:12px;text-align:center;font-size:13px;cursor:pointer;background:#FAF6EF}
+.a-type .opt.on{border-color:var(--red);color:var(--red);background:#FBEAE9}
+.a-type .opt small{display:block;font-size:10px;color:var(--sub);margin-top:3px}
+.form-item{margin-bottom:14px}
+.form-item label{font-size:13px;color:#666;display:block;margin-bottom:6px}
+.form-item textarea,.form-item select{width:100%;border:1px solid #E5DACB;border-radius:6px;padding:10px;font-size:13px;background:#FAF6EF}
+.steps{padding:4px 0}
+.step{display:flex;gap:10px}
+.step .dot{width:10px;height:10px;border-radius:50%;background:#DDD2C2;margin-top:4px;flex-shrink:0}
+.step.done .dot{background:var(--red)}
+.step .s-c{flex:1;padding-bottom:16px;border-left:1px solid #EEE7DD;margin-left:-6px;padding-left:12px}
+.step:last-child .s-c{border-left-color:transparent}
+.step .s-t{font-size:13px;font-weight:500}
+.step .s-d{font-size:11px;color:var(--sub);margin-top:2px}
+.scan{margin:14px;text-align:center;background:#fff;border-radius:12px;padding:24px}
+.scan .box{width:120px;height:120px;margin:0 auto 12px;border:2px solid var(--red);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--red);position:relative}
+.scan .box::before,.scan .box::after{content:"";position:absolute;width:20px;height:20px;border:3px solid var(--gold)}
+.scan .box::before{top:-2px;left:-2px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.scan .box::after{bottom:-2px;right:-2px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+.scan p{font-size:12px;color:var(--sub)}
+.scan p b{color:var(--red)}
+
+/* ============ 管理端 ============ */
+.admin{display:none;padding:64px 30px 30px;max-width:1200px;margin:0 auto}
+.admin.on{display:block}
+.admin h1{font-size:20px;margin-bottom:4px}
+.admin .sub{font-size:12px;color:#888;margin-bottom:20px}
+.a-layout{display:flex;gap:16px}
+.side{width:170px;background:#fff;border-radius:12px;padding:10px;flex-shrink:0;height:fit-content}
+.side div{padding:11px 16px;border-radius:8px;font-size:14px;color:#555;cursor:pointer;margin-bottom:2px}
+.side div.on{background:#FBEAE9;color:var(--red);font-weight:600}
+.a-main{flex:1;background:#fff;border-radius:12px;padding:20px}
+.a-panel{display:none}
+.a-panel.on{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#FAF6EF;border:1px solid var(--line);border-radius:10px;padding:16px}
+.stat .v{font-size:24px;font-weight:600}
+.stat .v.red{color:var(--red)}
+.stat .v.orange{color:var(--orange)}
+.stat .v.gold{color:var(--gold-deep)}
+.stat .l{font-size:12px;color:#888;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;background:#FAF6EF;color:#666;font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:11px 12px;border-bottom:1px solid #F5F1E8;color:#333}
+tr:hover td{background:#FBF9F4}
+.op{color:var(--blue);cursor:pointer;margin-right:10px}
+.op.red{color:var(--red)}
+.op.green{color:var(--green)}
+.op.gold{color:var(--gold-deep)}
+.st{padding:2px 8px;border-radius:4px;font-size:11px;display:inline-block}
+.st.red{background:#FBEAE9;color:var(--red)}
+.st.green{background:#E8F8F0;color:var(--green)}
+.st.blue{background:#E8F3FF;color:var(--blue)}
+.st.orange{background:#FFF7E8;color:#FA8C16}
+.st.gray{background:#F2F3F5;color:#999}
+.st.gold{background:#FBF3E1;color:var(--gold-deep)}
+.low{color:var(--red);font-weight:600}
+.flt{display:flex;gap:10px;margin-bottom:14px}
+.flt input,.flt select{border:1px solid #E5DACB;border-radius:6px;padding:7px 10px;font-size:13px;color:#333}
+.flt .btn-red{padding:7px 16px;border-radius:6px}
+.panel-title{font-size:15px;font-weight:600;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<div class="mode-toggle">
+  <button class="on" onclick="setMode('c',this)">客户端 H5</button>
+  <button onclick="setMode('a',this)">管理端</button>
+</div>
+
+<!-- ==================== 客户端 ==================== -->
+<div class="app" id="clientMode">
+
+  <!-- 首页 -->
+  <div class="page on" id="pg-home">
+    <div class="home-head">
+      <div class="hh-top">
+        <div class="brand"><div class="logo">纪</div><div><b>青果纪</b><small>QING GUO JI · 匠心青果</small></div></div>
+        <div style="font-size:12px;opacity:.8">长沙 · 旗舰店</div>
+      </div>
+      <div class="search-input" onclick="toast('搜索功能开发中')">搜索：枸杞青果 / 冰榔 / 礼盒</div>
+    </div>
+    <div class="scroll">
+      <div class="banner"><b>秋装新品 · 青果上新</b><span>枸杞青果系列全新升级 · 会员下单双倍成长值</span></div>
+      <div class="member-card" onclick="go('me')">
+        <div class="mc-top"><span class="mc-lv">银卡会员<span class="tag">LV2</span></span><span class="mc-r">会员权益 ›</span></div>
+        <div class="mc-pts">8,620 <small>积分</small></div>
+        <div class="mc-bar"><i></i></div>
+        <div class="mc-next">成长值 6,200 / 20,000，再消费 13,800 元升级金卡</div>
+      </div>
+      <div class="quick">
+        <div class="q" onclick="go('me')"><i style="background:linear-gradient(135deg,#E8B34B,#C9912F)">签</i>每日签到</div>
+        <div class="q" onclick="go('scan')"><i style="background:linear-gradient(135deg,#C93A32,#8E1714)">扫</i>扫码积分</div>
+        <div class="q" onclick="go('points')"><i style="background:linear-gradient(135deg,#2B2320,#4A3226)">兑</i>积分兑换</div>
+        <div class="q" onclick="go('me')"><i style="background:linear-gradient(135deg,#1989FA,#0E6FD8)">礼</i>会员礼</div>
+      </div>
+      <div class="sec-head"><h3>爆品热卖</h3><span onclick="toast('进入全部商品')">全部 ›</span></div>
+      <div class="grid">
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#C93A32,#8E1714)"><span>枸杞青果</span><small>QINGGUOJI</small></div>
+          <div class="gbody"><div class="gname">枸杞青果槟榔 10元装 整条5包</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>50</span><span class="gsales">已售 2.6万</span><span class="gpts">积分×2</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#4A3226,#2B2320)"><span>咖啡金花</span><small>QINGGUOJI</small></div>
+          <div class="gbody"><div class="gname">咖啡味金花槟榔 15元装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>15</span><span class="gsales">已售 1.8万</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#2F6F5E,#1C4A3E)"><span>冰榔薄荷</span><small>QINGGUOJI</small></div>
+          <div class="gbody"><div class="gname">冰榔薄荷爆珠 20元装 清凉劲爽</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>20</span><span class="gsales">已售 9,200</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#B8862B,#8E6416)"><span>精制散籽</span><small>QINGGUOJI</small></div>
+          <div class="gbody"><div class="gname">精选青果散籽 250g 罐装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>88</span><span class="gsales">已售 4,300</span></div></div>
+        </div>
+      </div>
+      <div class="sec-head"><h3>礼盒专区</h3><span>送礼首选 ›</span></div>
+      <div class="grid">
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#8E1714,#5C0F0C)"><span>黑金礼盒</span><small>尊享 10 包装</small></div>
+          <div class="gbody"><div class="gname">青果纪黑金礼盒 全系列 10包装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>268</span><span class="gsales">已售 860</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#C9912F,#8E6416)"><span>金玉满堂</span><small>中秋礼盒</small></div>
+          <div class="gbody"><div class="gname">金玉满堂礼盒 枸杞+咖啡各5包</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>168</span><span class="gsales">已售 1,204</span></div></div>
+        </div>
+      </div>
+      <div class="sec-head"><h3>口味全系列</h3><span>更多 ›</span></div>
+      <div class="grid" style="margin-bottom:14px">
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#7A4E9E,#543374)"><span>芝麻爆珠</span><small>25元装</small></div>
+          <div class="gbody"><div class="gname">芝麻香爆珠青果 25元装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>25</span><span class="gsales">已售 6,700</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#1E6FA8,#124F78)"><span>话梅青果</span><small>12元装</small></div>
+          <div class="gbody"><div class="gname">话梅味青果槟榔 12元装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>12</span><span class="gsales">已售 1.1万</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#3D8B37,#256622)"><span>木糖醇</span><small>30元装</small></div>
+          <div class="gbody"><div class="gname">木糖醇清口青果 30元装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>30</span><span class="gsales">已售 3,900</span></div></div>
+        </div>
+        <div class="gcard" onclick="go('detail')">
+          <div class="gimg" style="background:linear-gradient(135deg,#C9782B,#96520F)"><span>桂子油</span><small>8元装</small></div>
+          <div class="gbody"><div class="gname">经典桂子油槟榔 8元装</div>
+          <div class="grow2"><span class="gprice price"><em>¥</em>8</span><span class="gsales">已售 4.2万</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div class="tb on" onclick="go('home')"><i class="ic"></i>首页</div>
+      <div class="tb" onclick="go('points')"><i class="ic"></i>积分兑换</div>
+      <div class="tb mid" onclick="go('scan')"><i class="ic"></i>扫码积分</div>
+      <div class="tb" onclick="go('cart')"><i class="ic"></i>购物车</div>
+      <div class="tb" onclick="go('me')"><i class="ic"></i>我的</div>
+    </div>
+  </div>
+
+  <!-- 商品详情 -->
+  <div class="page" id="pg-detail">
+    <div class="scroll" style="padding-bottom:120px">
+      <div class="d-img"><b>枸杞青果</b><small>QINGGUOJI · 匠心卤制 · 枸杞入魂</small></div>
+      <div class="d-body">
+        <div class="d-price"><span class="p">¥50</span><span class="o">¥60</span><span class="g">下单得 100 积分</span></div>
+        <div class="d-name">枸杞青果槟榔 10元装 · 整条5包</div>
+        <span class="d-sub">会员专享：银卡95折 · 金卡9折 · 黑金85折</span>
+        <div class="d-svc"><span>正品保证</span><span>扫码积分</span><span>破损包赔</span><span>48h发货</span></div>
+      </div>
+      <div class="d-sec">
+        <div class="sku-title">规格</div>
+        <div class="chips" id="chipsSpec">
+          <div class="chip on" onclick="pick(this)">单包 · ¥10 · 有货</div>
+          <div class="chip" onclick="pick(this)">整条5包 · ¥50 · 有货</div>
+          <div class="chip" onclick="pick(this)">整箱50包 · ¥450 · 库存紧张</div>
+        </div>
+        <div class="sku-title">口味</div>
+        <div class="chips">
+          <div class="chip on" onclick="pick(this)">枸杞青果</div><div class="chip" onclick="pick(this)">咖啡金花</div><div class="chip" onclick="pick(this)">冰榔薄荷</div>
+        </div>
+        <div class="sku-title">购买数量</div>
+        <div class="stepper"><button onclick="stepQty(-1)">−</button><span id="qty">1</span><button onclick="stepQty(1)">+</button></div>
+      </div>
+      <div class="d-sec" style="margin-bottom:12px;border-radius:0 0 12px 12px;margin-left:0">
+        <div class="sku-title" style="margin-bottom:8px">商品详情</div>
+        <div style="height:100px;border-radius:8px;background:#FAF6EF;display:flex;align-items:center;justify-content:center;color:#C9BCAE;font-size:13px">产地 / 卤制工艺 / 检验报告 图文详情</div>
+      </div>
+    </div>
+    <div class="d-bar">
+      <div class="mini" onclick="go('me')"><i></i>会员</div>
+      <div class="mini" onclick="go('cart')"><i></i>购物车</div>
+      <div class="grow"></div>
+      <button class="btn-cart" onclick="go('cart')">加入购物车</button>
+      <button class="btn-buy" onclick="go('confirm')">立即购买</button>
+    </div>
+  </div>
+
+  <!-- 会员中心（我的） -->
+  <div class="page" id="pg-me">
+    <div class="scroll" style="padding-bottom:80px">
+      <div class="me-hero">
+        <div class="me-top">
+          <div class="avatar">张</div>
+          <div><span class="n">张三</span><span class="lv">银卡 LV2</span><div class="p">138****8888 · 会员码 8821 0036</div></div>
+        </div>
+      </div>
+      <div class="me-pts-row">
+        <div class="pt-card" onclick="toast('积分明细')"><div class="v">8,620</div><div class="l">可用积分</div></div>
+        <div class="pt-card" onclick="toast('成长值明细：消费1元=1成长值')"><div class="v">6,200</div><div class="l">成长值</div></div>
+        <div class="pt-card" onclick="go('points')"><div class="v">3</div><div class="l">优惠券</div></div>
+      </div>
+      <div class="checkin">
+        <div class="ci-head"><b>每日签到</b><span>已连续签到 3 天 · 满 7 天奖 50 积分</span></div>
+        <div class="ci-days">
+          <div class="ci-day got"><i></i>周一</div>
+          <div class="ci-day got"><i></i>周二</div>
+          <div class="ci-day got"><i></i>周三</div>
+          <div class="ci-day"><i></i>周四</div>
+          <div class="ci-day"><i></i>周五</div>
+          <div class="ci-day"><i></i>周六</div>
+          <div class="ci-day"><i></i>周日</div>
+        </div>
+        <button class="ci-btn" onclick="toast('签到成功 +5 积分')">立即签到（+5 积分）</button>
+      </div>
+      <div class="lv-rules">
+        <div class="ci-head"><b>会员等级</b><span style="color:var(--sub)">消费 1 元 = 1 成长值</span></div>
+        <div class="lv-row">
+          <div class="lv-badge" style="background:#9A8F86">注册</div>
+          <div class="lv-info"><b>注册会员</b><small>0 成长值起 · 新人礼包</small></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-badge" style="background:#B87333">LV1</div>
+          <div class="lv-info"><b>铜卡</b><small>1,000 成长值 · 积分 1.2 倍</small></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-badge" style="background:#8C9BAB">LV2</div>
+          <div class="lv-info"><b>银卡</b><small>5,000 成长值 · 积分 1.5 倍 · 95折</small></div>
+          <span class="lv-cur">当前</span>
+        </div>
+        <div class="lv-row">
+          <div class="lv-badge" style="background:linear-gradient(135deg,#C9912F,#8E6416)">LV3</div>
+          <div class="lv-info"><b>金卡</b><small>20,000 成长值 · 积分 2 倍 · 9折 · 生日礼盒</small></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-badge" style="background:linear-gradient(135deg,#2B2320,#4A3226)">LV4</div>
+          <div class="lv-info"><b>黑金卡</b><small>50,000 成长值 · 积分 2.5 倍 · 85折 · 新品优先购 · 专属客服</small></div>
+        </div>
+      </div>
+      <div class="cells">
+        <div class="cell" onclick="go('orders')"><span class="cn">我的订单</span></div>
+        <div class="cell" onclick="go('orders')"><span class="cn">售后/退单</span></div>
+        <div class="cell" onclick="toast('收货地址管理')"><span class="cn">收货地址管理</span></div>
+        <div class="cell" onclick="toast('积分明细')"><span class="cn">积分明细</span></div>
+        <div class="cell" onclick="toast('会员专属客服通道')"><span class="cn">专属客服 <span class="bdg">1</span></span></div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div class="tb" onclick="go('home')"><i class="ic"></i>首页</div>
+      <div class="tb" onclick="go('points')"><i class="ic"></i>积分兑换</div>
+      <div class="tb mid" onclick="go('scan')"><i class="ic"></i>扫码积分</div>
+      <div class="tb" onclick="go('cart')"><i class="ic"></i>购物车</div>
+      <div class="tb on" onclick="go('me')"><i class="ic"></i>我的</div>
+    </div>
+  </div>
+
+  <!-- 扫码积分 -->
+  <div class="page" id="pg-scan">
+    <div class="nav"><span class="back" onclick="go('home')">‹</span>扫码积分</div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div class="scan">
+        <div class="box">⌘</div>
+        <p>扫描<b>包装内 laser 防伪码</b></p>
+        <p style="margin-top:4px">每包积 <b>10 积分</b> · 每日上限 20 包 · 防伪验真</p>
+      </div>
+      <div class="checkin">
+        <div class="ci-head"><b>今日扫码记录</b><span>已扫 5 包 · +50 积分</span></div>
+        <div class="cells" style="margin:0">
+          <div class="cell" style="font-size:13px"><span class="cn">枸杞青果 10元装 · 码 8F3A...92</span><span style="color:var(--gold-deep);font-weight:600">+10</span></div>
+          <div class="cell" style="font-size:13px"><span class="cn">咖啡金花 15元装 · 码 77C1...04</span><span style="color:var(--gold-deep);font-weight:600">+10</span></div>
+          <div class="cell" style="font-size:13px"><span class="cn">冰榔薄荷 20元装 · 码 A10B...6E</span><span style="color:var(--gold-deep);font-weight:600">+10</span></div>
+        </div>
+      </div>
+      <div class="cells">
+        <div class="cell" onclick="toast('防伪说明')"><span class="cn">如何辨别真伪？</span></div>
+        <div class="cell" onclick="toast('积分规则')"><span class="cn">扫码积分规则</span></div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div class="tb" onclick="go('home')"><i class="ic"></i>首页</div>
+      <div class="tb" onclick="go('points')"><i class="ic"></i>积分兑换</div>
+      <div class="tb mid on" onclick="go('scan')"><i class="ic"></i>扫码积分</div>
+      <div class="tb" onclick="go('cart')"><i class="ic"></i>购物车</div>
+      <div class="tb" onclick="go('me')"><i class="ic"></i>我的</div>
+    </div>
+  </div>
+
+  <!-- 积分兑换 -->
+  <div class="page" id="pg-points">
+    <div class="pts-head">
+      <div style="font-size:13px;opacity:.8">我的可用积分</div>
+      <div class="v">8,620</div>
+      <div class="l">银卡会员积分 1.5 倍加速中</div>
+    </div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div class="ex-tabs">
+        <div class="ex-tab on">全部</div><div class="ex-tab">槟榔产品</div><div class="ex-tab">品牌周边</div><div class="ex-tab">权益券</div>
+      </div>
+      <div class="ex-goods">
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#C93A32,#8E1714);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">枸杞青果 10元装</div>
+          <div class="gbody"><div class="gname">枸杞青果 10元装 单包</div><div class="grow2"><span class="need"><em></em>800 积分</span><button class="mall-sw" onclick="toast('兑换成功')">兑换</button></div></div></div>
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#4A3226,#2B2320);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">定制打火机</div>
+          <div class="gbody"><div class="gname">青果纪定制火机</div><div class="grow2"><span class="need">500 积分</span><button class="mall-sw" onclick="toast('兑换成功')">兑换</button></div></div></div>
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#B8862B,#8E6416);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">品牌保温杯</div>
+          <div class="gbody"><div class="gname">品牌联名保温杯</div><div class="grow2"><span class="need">3,000 积分</span><button class="mall-sw" onclick="toast('兑换成功')">兑换</button></div></div></div>
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#1E6FA8,#124F78);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">话费券</div>
+          <div class="gbody"><div class="gname">20 元话费充值券</div><div class="grow2"><span class="need">2,000 积分</span><button class="mall-sw" onclick="toast('兑换成功')">兑换</button></div></div></div>
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#7A4E9E,#543374);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">品牌卫衣</div>
+          <div class="gbody"><div class="gname">青果纪刺绣卫衣（金卡专属）</div><div class="grow2"><span class="need">8,000 积分</span><button class="mall-sw" onclick="toast('金卡可兑')">兑换</button></div></div></div>
+        <div class="ex-card"><div class="gimg" style="height:100px;background:linear-gradient(135deg,#3D8B37,#256622);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">9折券</div>
+          <div class="gbody"><div class="gname">全场 9 折优惠券</div><div class="grow2"><span class="need">1,500 积分</span><button class="mall-sw" onclick="toast('兑换成功')">兑换</button></div></div></div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div class="tb" onclick="go('home')"><i class="ic"></i>首页</div>
+      <div class="tb on" onclick="go('points')"><i class="ic"></i>积分兑换</div>
+      <div class="tb mid" onclick="go('scan')"><i class="ic"></i>扫码积分</div>
+      <div class="tb" onclick="go('cart')"><i class="ic"></i>购物车</div>
+      <div class="tb" onclick="go('me')"><i class="ic"></i>我的</div>
+    </div>
+  </div>
+
+  <!-- 购物车 -->
+  <div class="page" id="pg-cart">
+    <div class="nav">购物车（3）</div>
+    <div class="scroll" style="padding-bottom:120px">
+      <div class="cart-item"><div class="ck on"></div><div class="ci-img" style="background:linear-gradient(135deg,#C93A32,#8E1714)">枸杞青果</div>
+        <div class="ci-body"><div class="ci-n">枸杞青果槟榔 10元装</div><div class="ci-sku">整条5包 · 银卡95折</div>
+        <div class="ci-row"><span class="price">¥50.00</span><div class="stepper"><button>−</button><span>1</span><button>+</button></div></div></div></div>
+      <div class="cart-item"><div class="ck on"></div><div class="ci-img" style="background:linear-gradient(135deg,#4A3226,#2B2320)">咖啡金花</div>
+        <div class="ci-body"><div class="ci-n">咖啡味金花槟榔 15元装</div><div class="ci-sku">单包</div>
+        <div class="ci-row"><span class="price">¥15.00</span><div class="stepper"><button>−</button><span>2</span><button>+</button></div></div></div></div>
+      <div class="cart-item" style="opacity:.5"><div class="ck"></div><div class="ci-img" style="background:#C9BCAE">已下架</div>
+        <div class="ci-body"><div class="ci-n">初代桂子油 8元装（已下架）</div><div class="ci-sku">商品已失效，请移除</div>
+        <div class="ci-row"><span class="price">¥8.00</span></div></div></div>
+    </div>
+    <div class="settle">
+      <div class="all"><div class="ck on"></div>全选</div>
+      <div class="sum">合计：<b>¥76.00</b>（银卡95折已省 ¥4）</div>
+      <button class="btn-red" onclick="go('confirm')">结算(3)</button>
+    </div>
+    <div class="tabbar">
+      <div class="tb" onclick="go('home')"><i class="ic"></i>首页</div>
+      <div class="tb" onclick="go('points')"><i class="ic"></i>积分兑换</div>
+      <div class="tb mid" onclick="go('scan')"><i class="ic"></i>扫码积分</div>
+      <div class="tb on" onclick="go('cart')"><i class="ic"></i>购物车</div>
+      <div class="tb" onclick="go('me')"><i class="ic"></i>我的</div>
+    </div>
+  </div>
+
+  <!-- 确认订单 -->
+  <div class="page" id="pg-confirm">
+    <div class="nav"><span class="back" onclick="go('cart')">‹</span>确认订单</div>
+    <div class="scroll" style="padding-bottom:120px">
+      <div class="addr">
+        <div class="a-name">张三 <span>138****8888</span><span class="tag gold">默认</span></div>
+        <div class="a-det">湖南省长沙市岳麓区麓谷大道 658 号 青果大厦 8F-801</div>
+      </div>
+      <div class="o-item"><div class="img" style="background:linear-gradient(135deg,#C93A32,#8E1714)"></div>
+        <div style="flex:1"><div class="ci-n">枸杞青果槟榔 10元装</div><div class="ci-sku">整条5包</div></div>
+        <div style="text-align:right"><div class="price">¥47.50</div><div style="font-size:11px;color:#999;margin-top:4px">x1</div></div></div>
+      <div class="o-item" style="border-radius:0"><div class="img" style="background:linear-gradient(135deg,#4A3226,#2B2320)"></div>
+        <div style="flex:1"><div class="ci-n">咖啡味金花槟榔 15元装</div><div class="ci-sku">单包</div></div>
+        <div style="text-align:right"><div class="price">¥28.50</div><div style="font-size:11px;color:#999;margin-top:4px">x2</div></div></div>
+      <div class="o-sum">
+        <div class="row"><span>商品金额</span><span>¥80.00</span></div>
+        <div class="row"><span>会员折扣（银卡95折）</span><span style="color:var(--red)">−¥4.00</span></div>
+        <div class="row"><span>运费（满 99 免运费）</span><span>¥8.00</span></div>
+        <div class="row"><span>本单可得积分</span><span style="color:var(--gold-deep)">+150 积分（1.5倍）</span></div>
+        <div class="row total"><span>应付总额</span><b>¥84.50</b></div>
+      </div>
+    </div>
+    <div class="submit-bar"><span>应付总额：</span><b>¥84.50</b><button class="btn-red" onclick="go('pay')">提交订单</button></div>
+  </div>
+
+  <!-- 收银台 -->
+  <div class="page" id="pg-pay">
+    <div class="nav"><span class="back" onclick="go('confirm')">‹</span>收银台</div>
+    <div class="scroll" style="background:#fff;padding-bottom:80px">
+      <div style="text-align:center;padding:46px 0 26px">
+        <div style="font-size:13px;color:#999">订单金额</div>
+        <div style="font-size:36px;font-weight:700;color:var(--red);margin:10px 0">¥84.50</div>
+        <div style="font-size:12px;color:#999">订单号 202610212246500001 · <span style="color:var(--red)">支付剩余 14:52</span></div>
+      </div>
+      <div style="padding:0 20px">
+        <div style="border:1px solid var(--green);border-radius:10px;padding:16px;display:flex;align-items:center;gap:12px">
+          <div style="width:38px;height:38px;border-radius:8px;background:#E8F8F0;color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700">支</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:600">模拟支付渠道</div><div style="font-size:11px;color:#999">预留微信支付/支付宝网关接入</div></div>
+          <div class="ck on"></div>
+        </div>
+        <button class="btn-red" style="width:100%;padding:13px;border-radius:24px;font-size:15px;margin-top:22px" onclick="go('orders')">确认支付 ¥84.50</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 订单列表 -->
+  <div class="page" id="pg-orders">
+    <div class="nav">我的订单</div>
+    <div class="tabs"><div class="on">全部</div><div>待付款</div><div>待发货</div><div>待收货</div><div>售后</div></div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div class="order-card">
+        <div class="oc-head"><span>订单号 202610212246500001</span><span class="oc-status">待发货</span></div>
+        <div class="oc-item"><div class="img" style="background:linear-gradient(135deg,#C93A32,#8E1714)"></div>
+          <div style="flex:1"><div class="ci-n">枸杞青果槟榔 10元装 整条</div><div class="ci-sku">银卡95折 · 已支付</div></div>
+          <div style="text-align:right"><div class="price">¥47.50</div><div style="font-size:11px;color:#999;margin-top:4px">x1</div></div></div>
+        <div class="oc-foot"><span class="t">实付 <b>¥84.50</b></span><button class="btn-line" onclick="go('after')">申请售后</button></div>
+      </div>
+      <div class="order-card">
+        <div class="oc-head"><span>订单号 202610200935300002</span><span class="oc-status">待收货</span></div>
+        <div class="oc-item"><div class="img" style="background:linear-gradient(135deg,#2F6F5E,#1C4A3E)"></div>
+          <div style="flex:1"><div class="ci-n">冰榔薄荷爆珠 20元装</div><div class="ci-sku">已发货：顺丰 SF1234567890</div></div>
+          <div style="text-align:right"><div class="price">¥20.00</div><div style="font-size:11px;color:#999;margin-top:4px">x1</div></div></div>
+        <div class="oc-foot"><span class="t">实付 <b>¥20.00</b></span><button class="btn-line" onclick="go('after')">申请售后</button><button class="btn-red" onclick="toast('已确认收货')">确认收货</button></div>
+      </div>
+      <div class="order-card">
+        <div class="oc-head"><span>订单号 202610182055400003</span><span class="oc-status" style="color:#999">已取消</span></div>
+        <div class="oc-item"><div class="img" style="background:linear-gradient(135deg,#B8862B,#8E6416)"></div>
+          <div style="flex:1"><div class="ci-n">精制青果散籽 250g 罐装</div><div class="ci-sku">超时未支付自动取消 · 库存已释放</div></div>
+          <div style="text-align:right"><div class="price">¥88.00</div><div style="font-size:11px;color:#999;margin-top:4px">x1</div></div></div>
+        <div class="oc-foot"><span class="t">实付 <b>¥0.00</b></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 售后申请 -->
+  <div class="page" id="pg-after">
+    <div class="nav"><span class="back" onclick="go('orders')">‹</span>申请售后</div>
+    <div class="scroll" style="padding-bottom:120px">
+      <div class="order-card" style="margin-top:12px">
+        <div class="oc-item" style="margin:0"><div class="img" style="background:linear-gradient(135deg,#C93A32,#8E1714)"></div>
+          <div style="flex:1"><div class="ci-n">枸杞青果槟榔 10元装 整条</div><div class="ci-sku">实付 ¥47.50（95折后）</div></div></div>
+      </div>
+      <div class="d-sec" style="margin-top:10px;border-radius:12px;margin-left:14px;margin-right:14px">
+        <div class="sku-title">售后类型</div>
+        <div class="a-type">
+          <div class="opt on" onclick="pick(this)">仅退款<small>未收到货 / 待发货</small></div>
+          <div class="opt" onclick="pick(this)">退货退款<small>已收到货，需寄回</small></div>
+        </div>
+        <div class="form-item"><label>退货数量</label>
+          <div class="stepper"><button onclick="stepQty2(-1)">−</button><span id="qty2">1</span><button onclick="stepQty2(1)">+</button><span style="font-size:12px;color:#999;margin-left:8px">最多可退 1 条</span></div></div>
+        <div class="form-item"><label>退款金额</label>
+          <div style="font-size:18px;font-weight:700;color:var(--red)">¥47.50 <span style="font-size:11px;color:#999;font-weight:400">（按实付比例计算，会员折扣部分同步退回）</span></div></div>
+        <div class="form-item"><label>售后原因</label>
+          <select><option>七天无理由退换</option><option>包装破损/漏包</option><option>口感异常/变质</option><option>发错货</option><option>其他</option></select></div>
+        <div class="form-item"><label>补充描述</label>
+          <textarea rows="3" placeholder="请描述具体问题（选填）"></textarea></div>
+        <div class="form-item"><label>凭证图片（最多 3 张）</label>
+          <div style="display:flex;gap:8px"><div style="width:58px;height:58px;border:1px dashed #D8CBBB;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#C9BCAE;font-size:24px;cursor:pointer">+</div></div></div>
+        <div class="steps" style="background:#FAF6EF;border-radius:8px;padding:14px;margin-top:4px">
+          <div class="step done"><div class="dot"></div><div class="s-c"><div class="s-t">提交申请</div><div class="s-d">商家 1-3 个工作日内审核</div></div></div>
+          <div class="step"><div class="dot"></div><div class="s-c"><div class="s-t">商家审核</div><div class="s-d">仅退款：通过后直接退款</div></div></div>
+          <div class="step"><div class="dot"></div><div class="s-c"><div class="s-t">退款完成</div><div class="s-d">原路退回 1-3 个工作日到账</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="submit-bar"><button class="btn-line" onclick="go('orders')">取消</button><button class="btn-red" onclick="toast('售后申请已提交，等待商家审核')">提交申请</button></div>
+  </div>
+
+  <!-- 售后详情 -->
+  <div class="page" id="pg-afterDetail">
+    <div class="nav"><span class="back" onclick="go('orders')">‹</span>售后详情</div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div style="background:linear-gradient(135deg,#C93A32,#8E1714);color:#fff;padding:24px 20px">
+        <div style="font-size:17px;font-weight:600">退款成功</div>
+        <div style="font-size:12px;opacity:.85;margin-top:6px">退款 ¥20.00 原路退回，1-3 个工作日到账</div>
+      </div>
+      <div class="d-sec" style="margin-top:10px;border-radius:12px;margin-left:14px;margin-right:14px">
+        <div class="steps">
+          <div class="step done"><div class="dot"></div><div class="s-c"><div class="s-t">提交申请</div><div class="s-d">10-20 14:32 · 原因：包装破损</div></div></div>
+          <div class="step done"><div class="dot"></div><div class="s-c"><div class="s-t">商家审核通过</div><div class="s-d">10-20 16:05 · 审核人：店长</div></div></div>
+          <div class="step done"><div class="dot"></div><div class="s-c"><div class="s-t">退款完成</div><div class="s-d">10-20 16:06 · 模拟退款渠道</div></div></div>
+        </div>
+      </div>
+      <div class="order-card">
+        <div class="oc-item" style="margin:0"><div class="img" style="background:linear-gradient(135deg,#2F6F5E,#1C4A3E)"></div>
+          <div style="flex:1"><div class="ci-n">冰榔薄荷爆珠 20元装</div><div class="ci-sku">退款数量 1 包</div></div>
+          <div style="text-align:right"><div class="price">¥20.00</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 管理端 ==================== -->
+<div class="admin" id="adminMode">
+  <h1>青果纪 · 商家管理端</h1>
+  <div class="sub">商品 / 库存 / 订单 / 售后 / 会员 一体化管理（对标有赞 SaaS）</div>
+  <div class="a-layout">
+    <div class="side">
+      <div class="on" onclick="aPick('dash',this)">数据看板</div>
+      <div onclick="aPick('goods',this)">商品管理</div>
+      <div onclick="aPick('stock',this)">库存管理</div>
+      <div onclick="aPick('orders',this)">订单管理</div>
+      <div onclick="aPick('after',this)">售后管理</div>
+      <div onclick="aPick('member',this)">会员管理</div>
+    </div>
+    <div class="a-main">
+
+      <div class="a-panel on" id="ap-dash">
+        <div class="stat-grid">
+          <div class="stat"><div class="v red">¥ 12,860</div><div class="l">今日销售额</div></div>
+          <div class="stat"><div class="v">486</div><div class="l">今日订单数</div></div>
+          <div class="stat"><div class="v orange">18</div><div class="l">待发货订单</div></div>
+          <div class="stat"><div class="v orange">5</div><div class="l">待处理售后</div></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><div class="v gold">3,214</div><div class="l">会员总数</div></div>
+          <div class="stat"><div class="v">126</div><div class="l">今日扫码积分（包）</div></div>
+          <div class="stat"><div class="v red">7</div><div class="l">库存预警 SKU（&lt;10）</div></div>
+          <div class="stat"><div class="v">12</div><div class="l">在售 SKU</div></div>
+        </div>
+        <div class="panel-title">库存预警</div>
+        <table>
+          <tr><th>商品 / 规格</th><th>可售库存</th><th>锁定库存</th><th>操作</th></tr>
+          <tr><td>精制散籽 250g 罐装</td><td class="low">3</td><td>2</td><td><span class="op">补货</span></td></tr>
+          <tr><td>黑金礼盒 全系列10包装</td><td class="low">6</td><td>1</td><td><span class="op">补货</span></td></tr>
+          <tr><td>枸杞青果 · 整箱50包</td><td class="low">8</td><td>4</td><td><span class="op">补货</span></td></tr>
+        </table>
+      </div>
+
+      <div class="a-panel" id="ap-goods">
+        <div class="panel-title">商品管理</div>
+        <div class="flt"><input placeholder="搜索商品名称"><select><option>全部系列</option><option>枸杞系列</option><option>咖啡系列</option><option>礼盒</option></select><select><option>全部状态</option><option>上架</option><option>下架</option></select><button class="btn-red">＋ 新建商品</button></div>
+        <table>
+          <tr><th>商品</th><th>系列</th><th>SKU/规格</th><th>价格</th><th>销量</th><th>积分</th><th>状态</th><th>操作</th></tr>
+          <tr><td>枸杞青果槟榔 10元装</td><td>枸杞系列</td><td>单包/整条/整箱</td><td>¥10~¥450</td><td>26,004</td><td>双倍</td><td><span class="st green">上架</span></td><td><span class="op">编辑</span><span class="op gold">SKU</span><span class="op red">下架</span></td></tr>
+          <tr><td>咖啡味金花槟榔 15元装</td><td>咖啡系列</td><td>单包</td><td>¥15</td><td>18,120</td><td>1.5倍</td><td><span class="st green">上架</span></td><td><span class="op">编辑</span><span class="op gold">SKU</span><span class="op red">下架</span></td></tr>
+          <tr><td>冰榔薄荷爆珠 20元装</td><td>冰榔系列</td><td>单包</td><td>¥20</td><td>9,200</td><td>1.5倍</td><td><span class="st green">上架</span></td><td><span class="op">编辑</span><span class="op gold">SKU</span><span class="op red">下架</span></td></tr>
+          <tr><td>黑金礼盒 全系列10包装</td><td>礼盒</td><td>礼盒</td><td>¥268</td><td>860</td><td>双倍</td><td><span class="st green">上架</span></td><td><span class="op">编辑</span><span class="op gold">SKU</span><span class="op red">下架</span></td></tr>
+          <tr><td>初代桂子油 8元装</td><td>经典系列</td><td>单包</td><td>¥8</td><td>42,000</td><td>—</td><td><span class="st gray">下架</span></td><td><span class="op">编辑</span><span class="op green">上架</span></td></tr>
+        </table>
+      </div>
+
+      <div class="a-panel" id="ap-stock">
+        <div class="panel-title">库存管理 <span style="font-size:12px;color:#999;font-weight:400">（可售 = 总库存 − 锁定库存，调整全程留痕）</span></div>
+        <table>
+          <tr><th>商品 / SKU</th><th>总库存</th><th>锁定</th><th>可售</th><th>操作</th></tr>
+          <tr><td>枸杞青果 · 整条5包</td><td>2,000</td><td>126</td><td>1,874</td><td><span class="op">调整</span><span class="op">流水</span></td></tr>
+          <tr><td>枸杞青果 · 整箱50包</td><td>12</td><td>4</td><td class="low">8</td><td><span class="op">调整</span><span class="op">流水</span></td></tr>
+          <tr><td>精制散籽 250g 罐装</td><td>5</td><td>2</td><td class="low">3</td><td><span class="op">调整</span><span class="op">流水</span></td></tr>
+        </table>
+        <div class="panel-title" style="margin-top:22px">库存调整流水（最近）</div>
+        <table>
+          <tr><th>时间</th><th>SKU</th><th>变更</th><th>变更后可售</th><th>操作人</th><th>原因</th></tr>
+          <tr><td>10-21 14:02</td><td>精制散籽 250g</td><td style="color:#07C160">+10</td><td>3</td><td>店长</td><td>采购入库 PO-20261021</td></tr>
+          <tr><td>10-20 18:40</td><td>咖啡金花 15元装</td><td style="color:#F2270C">−2（盘点）</td><td>540</td><td>仓管员</td><td>盘亏核销</td></tr>
+          <tr><td>10-19 11:20</td><td>冰榔薄荷 20元装</td><td style="color:#07C160">+1（退货回补）</td><td>320</td><td>系统</td><td>售后单 AH-20261019-002 回补</td></tr>
+        </table>
+      </div>
+
+      <div class="a-panel" id="ap-orders">
+        <div class="panel-title">订单管理</div>
+        <div class="flt"><input placeholder="订单号 / 收货人 / 手机号"><select><option>全部状态</option><option>待付款</option><option>待发货</option><option>待收货</option><option>已完成</option><option>已取消</option><option>售后中</option></select><button class="btn-red">查询</button></div>
+        <table>
+          <tr><th>订单号</th><th>买家/会员</th><th>金额</th><th>获得积分</th><th>状态</th><th>操作</th></tr>
+          <tr><td>202610212246500001</td><td>张三 · 银卡</td><td>¥84.50</td><td>+150</td><td><span class="st orange">待发货</span></td><td><span class="op">详情</span><span class="op green">发货</span></td></tr>
+          <tr><td>202610211401120004</td><td>李四 · 注册</td><td>¥15.00</td><td>+15</td><td><span class="st red">待付款</span></td><td><span class="op">详情</span></td></tr>
+          <tr><td>202610200935300002</td><td>王五 · 金卡</td><td>¥18.00</td><td>+40</td><td><span class="st blue">待收货</span></td><td><span class="op">详情</span></td></tr>
+          <tr><td>202610191620450003</td><td>赵六 · 黑金</td><td>¥227.80</td><td>+670</td><td><span class="st green">已完成</span></td><td><span class="op">详情</span></td></tr>
+        </table>
+      </div>
+
+      <div class="a-panel" id="ap-after">
+        <div class="panel-title">售后管理</div>
+        <div class="flt"><select><option>全部状态</option><option>待审核</option><option>待买家寄回</option><option>待商家收货</option><option>已完成</option><option>已拒绝</option></select><button class="btn-red">查询</button></div>
+        <table>
+          <tr><th>售后单号</th><th>关联订单</th><th>类型</th><th>退款金额</th><th>原因</th><th>状态</th><th>操作</th></tr>
+          <tr><td>AH-20261021-005</td><td>...300002</td><td>退货退款</td><td>¥20.00</td><td>包装破损</td><td><span class="st orange">待审核</span></td><td><span class="op green">通过</span><span class="op red">拒绝</span><span class="op">详情</span></td></tr>
+          <tr><td>AH-20261021-004</td><td>...246500001</td><td>仅退款</td><td>¥47.50</td><td>发错货</td><td><span class="st orange">待审核</span></td><td><span class="op green">通过</span><span class="op red">拒绝</span><span class="op">详情</span></td></tr>
+          <tr><td>AH-20261020-003</td><td>...620450003</td><td>退货退款</td><td>¥227.80</td><td>口感异常</td><td><span class="st blue">待商家收货</span></td><td><span class="op green">确认收货并退款</span><span class="op">详情</span></td></tr>
+          <tr><td>AH-20261019-002</td><td>...55400006</td><td>退货退款</td><td>¥20.00</td><td>七天无理由</td><td><span class="st green">已完成</span></td><td><span class="op">详情</span></td></tr>
+        </table>
+        <div style="margin-top:14px;font-size:12px;color:#999">退款均为模拟渠道（原路退回提示）；退货退款完成后自动回补库存，可在「库存管理 → 流水」查看回补记录。</div>
+      </div>
+
+      <div class="a-panel" id="ap-member">
+        <div class="panel-title">会员管理</div>
+        <div class="stat-grid" style="grid-template-columns:repeat(5,1fr)">
+          <div class="stat"><div class="v">1,820</div><div class="l">注册会员</div></div>
+          <div class="stat"><div class="v">860</div><div class="l">铜卡</div></div>
+          <div class="stat"><div class="v">412</div><div class="l">银卡</div></div>
+          <div class="stat"><div class="v">102</div><div class="l">金卡</div></div>
+          <div class="stat"><div class="v gold">20</div><div class="l">黑金卡</div></div>
+        </div>
+        <div class="panel-title">会员列表</div>
+        <div class="flt"><input placeholder="手机号 / 会员码"><select><option>全部等级</option><option>注册会员</option><option>铜卡</option><option>银卡</option><option>金卡</option><option>黑金卡</option></select><button class="btn-red">查询</button></div>
+        <table>
+          <tr><th>会员码</th><th>昵称</th><th>手机号</th><th>等级</th><th>成长值</th><th>积分</th><th>操作</th></tr>
+          <tr><td>88210036</td><td>张三</td><td>138****8888</td><td><span class="st blue">银卡</span></td><td>6,200 / 20,000</td><td>8,620</td><td><span class="op">积分调整</span><span class="op">明细</span></td></tr>
+          <tr><td>88210012</td><td>李四</td><td>139****6666</td><td><span class="st gray">注册</span></td><td>320 / 1,000</td><td>1,150</td><td><span class="op">积分调整</span><span class="op">明细</span></td></tr>
+          <tr><td>88200088</td><td>赵六</td><td>137****9999</td><td><span class="st gold">黑金</span></td><td>52,400</td><td>32,800</td><td><span class="op">积分调整</span><span class="op">明细</span></td></tr>
+        </table>
+        <div class="panel-title" style="margin-top:22px">积分/成长值规则配置</div>
+        <table>
+          <tr><th>规则</th><th>当前值</th><th>说明</th><th>操作</th></tr>
+          <tr><td>消费积分比例</td><td>1 元 = 1 积分（按等级倍率）</td><td>铜1.2 / 银1.5 / 金2.0 / 黑金2.5</td><td><span class="op">编辑</span></td></tr>
+          <tr><td>扫码积分</td><td>10 积分/包，每日上限 20 包</td><td>防伪码唯一，扫码即验真</td><td><span class="op">编辑</span></td></tr>
+          <tr><td>每日签到</td><td>+5 积分，连续 7 天 +50</td><td>自然周重置</td><td><span class="op">编辑</span></td></tr>
+          <tr><td>等级成长值门槛</td><td>0 / 1,000 / 5,000 / 20,000 / 50,000</td><td>消费 1 元 = 1 成长值，只增不减</td><td><span class="op">编辑</span></td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:13px;padding:10px 22px;border-radius:20px;z-index:999"></div>
+
+<script>
+function go(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  window.scrollTo(0,0);
+}
+function pick(el){
+  el.parentElement.querySelectorAll(':scope > .chip, :scope > .opt').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+}
+function stepQty(d){let q=document.getElementById('qty');q.textContent=Math.max(1,+q.textContent+d)}
+function stepQty2(d){let q=document.getElementById('qty2');q.textContent=Math.max(1,+q.textContent+d)}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000)}
+function setMode(m,btn){
+  document.querySelectorAll('.mode-toggle button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.getElementById('clientMode').style.display = m==='c'?'flex':'none';
+  document.getElementById('adminMode').className = m==='a'?'admin on':'admin';
+}
+function aPick(p,el){
+  el.parentElement.querySelectorAll('div').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+  document.querySelectorAll('.a-panel').forEach(x=>x.classList.remove('on'));
+  document.getElementById('ap-'+p).classList.add('on');
+}
+</script>
+</body>
+</html>
