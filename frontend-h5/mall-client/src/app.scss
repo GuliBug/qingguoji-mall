@@ -1,8 +1,10 @@
 page {
-  background: #F7F3EC;
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f7f3ec;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
-.brand-red { color: #B0231F; }
+.brand-red {
+  color: #b0231f;
+}
 .card {
   background: #fff;
   border-radius: 20px;
@@ -10,7 +12,7 @@ page {
   padding: 24px;
 }
 .btn-red {
-  background: linear-gradient(90deg, #C93A32, #8E1714);
+  background: linear-gradient(90deg, #c93a32, #8e1714);
   color: #fff;
   border-radius: 40px;
   font-size: 28px;

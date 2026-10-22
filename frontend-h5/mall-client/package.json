@@ -13,7 +13,14 @@
     "build:h5": "taro build --type h5",
     "dev:h5": "npm run build:h5 -- --watch",
     "dev:weapp": "npm run build:weapp -- --watch",
-    "build:weapp": "taro build --type weapp"
+    "build:weapp": "taro build --type weapp",
+    "lint": "eslint \"src/**/*.vue\" \"tests/**/*.{js,mjs}\" \"*.{js,mjs}\"",
+    "lint:fix": "eslint \"src/**/*.vue\" \"tests/**/*.{js,mjs}\" \"*.{js,mjs}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue,scss,css,json}\" \"tests/**/*.{js,mjs}\" \"*.{js,mjs,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,vue,scss,css,json}\" \"tests/**/*.{js,mjs}\" \"*.{js,mjs,json}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "node tests/e2e/run-all.mjs"
   },
   "browserslist": [
     "last 3 versions",
@@ -33,14 +40,26 @@
     "vue": "^3.4.27"
   },
   "devDependencies": {
+    "@eslint/js": "9.17.0",
     "@tarojs/cli": "^4.0.9",
     "@tarojs/vite-runner": "^4.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
     "@vitejs/plugin-vue": "^4.6.2",
-    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "@vitejs/plugin-vue-jsx": "^4.1.2",
     "@vue/babel-plugin-jsx": "^1.2.2",
     "babel-preset-taro": "^4.0.9",
+    "eslint": "9.17.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-vue": "9.32.0",
+    "globals": "15.14.0",
+    "jsdom": "25.0.1",
+    "prettier": "3.4.2",
+    "puppeteer": "24.10.0",
     "sass": "^1.77.0",
     "typescript": "^5.4.5",
-    "vite": "^4.5.14"
+    "vite": "^4.5.14",
+    "vitest": "3.2.4",
+    "vue-eslint-parser": "9.4.3"
   }
 }

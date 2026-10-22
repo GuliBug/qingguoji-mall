@@ -1,0 +1,16 @@
+/* Element Plus 细节覆盖（若依风格） */
+.el-table {
+  th.el-table__cell {
+    background: #f8f8f9 !important;
+    color: #515a6e;
+    font-weight: 500;
+  }
+}
+
+.el-dialog__body {
+  padding-top: 12px;
+}
+
+.el-form--inline .el-form-item {
+  margin-right: 16px;
+}

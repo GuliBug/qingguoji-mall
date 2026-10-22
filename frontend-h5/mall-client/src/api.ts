@@ -1,10 +1,23 @@
 import Taro from '@tarojs/taro'
 
 /**
- * 后端接口封装：base 指向 Spring Boot 后端 (8080)。
+ * 后端接口封装：base 指向 Spring Boot 后端。
  * 登录态 token 存本地，请求自动携带 X-Token。
+ *
+ * 地址策略（免改代码即可上服务器）：
+ * - 本地开发（localhost / 127.0.0.1）直连 8080；
+ * - 线上走 Nginx 同域反代，根地址留空，请求自然打成 /api/xxx。
  */
-const BASE = 'http://localhost:8080'
+function resolveBase(): string {
+  if (typeof window === 'undefined') {
+    // 小程序端无 window，需在配置里指定完整域名
+    return ''
+  }
+  const host = window.location.hostname
+  return host === 'localhost' || host === '127.0.0.1' ? 'http://localhost:8080' : ''
+}
+
+const BASE = resolveBase()
 
 const TOKEN_KEY = 'qgj_token'
 
@@ -39,7 +52,8 @@ export const api = {
   pointsLogs: () => request('GET', '/api/member/points/logs'),
 
   // ---- 商品 / 购物车 ----
-  products: (page = 0, category = '') => request('GET', `/api/products?page=${page}&size=20${category ? '&category=' + category : ''}`),
+  products: (page = 0, category = '') =>
+    request('GET', `/api/products?page=${page}&size=20${category ? '&category=' + category : ''}`),
   productDetail: (id: number) => request('GET', `/api/products/${id}`),
   cart: () => request('GET', '/api/cart'),
   addToCart: (skuId: number, qty: number) => request('POST', '/api/cart', { skuId, qty }),

@@ -1,0 +1,41 @@
+# ---------- 阶段一：构建后端 jar ----------
+# 国内服务器构建慢时，把基础镜像换成镜像站地址，例如
+#   --build-arg MAVEN_IMAGE=maven:3.9-eclipse-temurin-21
+FROM maven:3.9-eclipse-temurin-21 AS builder
+
+WORKDIR /build
+
+# 先只拷贝 pom，利用 Docker 层缓存避免每次改代码都重下依赖
+COPY pom.xml .
+RUN mvn -B -q dependency:go-offline || true
+
+COPY src ./src
+# spotless 只做格式化校验，打包阶段跳过，避免格式问题阻断部署
+RUN mvn -B -q clean package -DskipTests -Dspotless.check.skip=true
+
+# ---------- 阶段二：运行时 ----------
+FROM eclipse-temurin:21-jre
+
+ENV TZ=Asia/Shanghai \
+    SERVER_PORT=8080 \
+    SPRING_PROFILES_ACTIVE=mysql \
+    JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC -Dfile.encoding=UTF-8"
+
+WORKDIR /app
+
+RUN groupadd -r app && useradd -r -g app app \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/target/mall-backend-*.jar /app/app.jar
+
+RUN chown -R app:app /app
+USER app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -fsS http://127.0.0.1:8080/actuator/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

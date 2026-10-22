@@ -1,0 +1,45 @@
+schema: spec-driven
+
+context: |
+  项目：青果纪槟榔会员商城（qingguoji-mall），区域槟榔品牌的私有电商系统。
+  目标：打通「浏览→加购→下单→支付→发货→收货→售后」闭环，含一物一码防伪积分。
+  技术栈：
+    - 后端：Spring Boot 3.5.6 + JDK 21 + Spring Data JPA，开发用 H2、生产用 MySQL；
+            若依（RuoYi）风格分层（common / framework / mall），统一 AjaxResult 响应、Spotless 格式化。
+    - Web 管理端：Vue3 + Element Plus + Vite + Pinia，若依 ruoyi-ui 风格（frontend-web/）。
+    - H5 客户端：Taro 4 + Vue3 + TypeScript（frontend-h5/mall-client/），编译目标含 H5/微信小程序。
+    - 测试：后端 JUnit + Spotless；Web/H5 用 ESLint + Prettier + Vitest(3.2.4) + Puppeteer(24.10.0)。
+  工程边界：前后端彻底分离，后端不托管任何前端页面；客户端接口 /api/**，管理端接口 /admin-api/**。
+  令牌：买家令牌前缀 MBR-、管理员令牌前缀 ADM-，均经请求头 X-Token 传递，拦截器按 @RequireLogin(LoginType) 校验。
+  质量门禁（每个 change 的收尾任务必须包含）：后端 mvn spotless:check 通过；前端 npm run lint 与
+  npm run format:check 零报错；Web/H5 的 npm test（Vitest）与 npm run test:e2e（Puppeteer）全绿。
+  契约权威：openspec/specs/api-contract/spec.md（即原 03-1 接口规范）是前后端唯一契约来源；
+            前端对契约有疑问时，在对应 change 的 design.md「契约疑问」章节记录，由后端确认后更新，禁止直接改主规格。
+  语言：本仓库所有规划产物用中文撰写，技术标识符（类名/接口路径/字段）保留英文原文。
+  提交：禁止 AI 自动 commit / push；格式化与测试门禁在本地通过后，由人工决定是否提交。
+
+rules:
+  proposal:
+    - 用中文描述「做什么 / 为什么」，并显式列出 out of scope（本期不做项）。
+    - 每个变更都要能回溯到需求编号（如 U-03、O-05）或明确为新增能力。
+  design:
+    - 涉及接口变动时，必须同时更新 api-contract 能力的主规格（经 change 的 specs delta）。
+    - 跨端（前端/后端）协作的变更，在 design.md 写明各方责任与对接点。
+  specs:
+    - 需求条目用 Requirement + Scenario 结构，保留原 SRS 编号作为可追溯锚点（如 ### Requirement: U-01 手机号验证码登录）。
+    - 状态为 ⚠️/⬜ 的需求要明确标注 gap，便于后续变更候选跟踪。
+  tasks:
+    - 任务拆到可在一次会话内完成的粒度；每条任务标注对应的需求编号。
+    - 收尾任务必须含质量门禁（lint / format / test / e2e）与契约同步。
+
+operations:
+  apply:
+    guidance:
+      - 实现前先读取对应能力的 openspec/specs/<cap>/spec.md 作为当前事实来源。
+      - 代码改动完成后，先在本机跑质量门禁（spotless:check / lint / format:check / test / test:e2e），全绿再标记任务完成。
+      - 不自动提交；由人工在确认后提交。
+  archive:
+    guidance:
+      - 归档前确认所有任务已完成且门禁通过。
+      - 归档时同步 delta 规格到主规格库，并在摘要中说明本次变更触达的需求编号与新增/修改的能力。
+      - 若存在 ⚠️/⬜ gap，记录在归档摘要，便于后续变更跟进。

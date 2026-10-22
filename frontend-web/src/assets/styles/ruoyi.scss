@@ -1,0 +1,46 @@
+/* 若依通用表格与表单样式 */
+.page-wrapper {
+  padding: 16px 20px;
+  background: #f0f2f5;
+  min-height: calc(100vh - 50px);
+}
+
+.search-card {
+  background: #fff;
+  padding: 18px 18px 0;
+  margin-bottom: 12px;
+  border-radius: 4px;
+
+  .el-form-item {
+    margin-bottom: 18px;
+  }
+}
+
+.table-card {
+  background: #fff;
+  padding: 16px 18px 8px;
+  border-radius: 4px;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 0 8px;
+}
+
+/* 单元格内的金额强调 */
+.amount {
+  color: #f56c6c;
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #909399;
+}

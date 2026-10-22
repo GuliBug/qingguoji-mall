@@ -1,0 +1,35 @@
+/* 全局样式：若依经典配色与布局变量 */
+@use './variables.scss' as *;
+@use './ruoyi.scss' as *;
+@use './element-plus.scss' as *;
+@use './sidebar.scss' as *;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-container {
+  padding: 20px;
+}

@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-ssr
+coverage
+tests/e2e/screenshots
+*.local
+.DS_Store
+npm-debug.log*

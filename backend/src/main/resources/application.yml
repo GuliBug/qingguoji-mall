@@ -1,38 +1,47 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: mall-backend
   datasource:
-    # 默认 H2 内存库（MODE=MySQL），免安装即可跑通；生产切 mysql profile
-    url: jdbc:h2:mem:mall;MODE=MySQL;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    # 默认 H2 内存库（MODE=MySQL），免安装即可跑通；生产用 mysql profile
+    url: ${DB_URL:jdbc:h2:mem:mall;MODE=MySQL;DB_CLOSE_DELAY=-1}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     open-in-view: false
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE:true}
       path: /h2-console
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
 
 app:
-  order-timeout-scan: true
+  # 订单超时自动取消任务开关
+  order-timeout-scan: ${ORDER_TIMEOUT_SCAN:true}
+  # 演示种子数据开关，生产置 false
+  demo-data: ${DEMO_DATA:true}
 
 ---
-# 生产/联调配置：启动加 --spring.profiles.active=mysql
+# 生产 / 联调用：--spring.profiles.active=mysql
 spring:
   config:
     activate:
       on-profile: mysql
   datasource:
-    url: jdbc:mysql://localhost:3306/qingguoji_mall?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:qingguoji_mall}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
   jpa:
     hibernate:
       ddl-auto: update
+  h2:
+    console:
+      enabled: false

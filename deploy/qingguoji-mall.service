@@ -1,0 +1,42 @@
+[Unit]
+Description=Qingguoji Mall Backend
+Documentation=https://github.com/your-org/qingguoji-mall
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=qingguoji
+Group=qingguoji
+WorkingDirectory=/opt/qingguoji
+
+# 生产环境走 mysql profile；连接信息用环境变量注入，避免把密码写进 jar
+Environment="SERVER_PORT=8080"
+Environment="SPRING_PROFILES_ACTIVE=mysql"
+Environment="DB_HOST=127.0.0.1"
+Environment="DB_PORT=3306"
+Environment="DB_NAME=qingguoji_mall"
+Environment="DB_USERNAME=qingguoji"
+Environment="DB_PASSWORD=change-me"
+Environment="DEMO_DATA=false"
+Environment="H2_CONSOLE=false"
+# Java 参数按机器内存调整，1C2G 用 256m/512m 足够
+Environment="JAVA_OPTS=-Xms256m -Xmx512m -XX:+UseG1GC -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Shanghai"
+
+ExecStart=/usr/bin/java $JAVA_OPTS -jar /opt/qingguoji/app.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+
+StandardOutput=append:/var/log/qingguoji/backend.log
+StandardError=append:/var/log/qingguoji/backend-error.log
+
+# 基础加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/log/qingguoji
+
+[Install]
+WantedBy=multi-user.target

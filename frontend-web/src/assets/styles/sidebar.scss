@@ -1,0 +1,71 @@
+@use './variables.scss' as *;
+
+/* 侧边栏样式：与若依深色侧边栏保持一致 */
+.sidebar-container {
+  background-color: $menu-bg;
+  transition: width 0.28s;
+  width: $base-sidebar-width !important;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1001;
+  overflow: hidden;
+
+  .el-menu {
+    border: none;
+    width: 100%;
+  }
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    color: $menu-text;
+
+    &:hover {
+      background-color: $menu-hover-bg !important;
+    }
+  }
+
+  .el-menu-item.is-active {
+    color: #409eff !important;
+    background-color: $menu-active-bg !important;
+  }
+}
+
+.sidebar-logo {
+  height: $logo-height;
+  line-height: $logo-height;
+  background: $logo-bg;
+  text-align: center;
+  overflow: hidden;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .logo-title {
+    color: $logo-text;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+}
+
+.hideSidebar {
+  .sidebar-container {
+    width: 54px !important;
+  }
+
+  .main-container {
+    margin-left: 54px;
+  }
+
+  .logo-title {
+    display: none;
+  }
+}
